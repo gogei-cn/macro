@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / Build
+build/
+dist/
+*.spec
+
+# Configuration & Data (Optional: keep if you want to track default config)
+# settings.json
+# macro.json
+
+# IDE
+.vscode/
+.idea/
