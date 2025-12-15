@@ -15,7 +15,7 @@ jobs:
           - os: windows-latest
             executable_name: MouseMacro.exe
             asset_name: MouseMacro-Windows.exe
-          - os: ubuntu-20.04
+          - os: ubuntu-latest
             executable_name: MouseMacro
             asset_name: MouseMacro-Linux
           - os: macos-latest

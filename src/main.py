@@ -3,10 +3,22 @@ import os
 import platform
 from pynput import keyboard
 
-from .settings import settings
-from .utils import Colors, setup_dpi_awareness
-from .recorder import MacroRecorder
-from .player import MacroPlayer
+# Handle imports whether running as a package or a script
+if __package__:
+    from .settings import settings
+    from .utils import Colors, setup_dpi_awareness
+    from .recorder import MacroRecorder
+    from .player import MacroPlayer
+else:
+    # Add the current directory to sys.path to ensure imports work
+    import sys
+    import os
+    sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+    
+    from settings import settings
+    from utils import Colors, setup_dpi_awareness
+    from recorder import MacroRecorder
+    from player import MacroPlayer
 
 # 仅在 Windows 上启用 ANSI 颜色修复
 if platform.system() == 'Windows':
