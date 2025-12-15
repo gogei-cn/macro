@@ -11,12 +11,20 @@ jobs:
   build:
     strategy:
       matrix:
+<<<<<<< HEAD
+=======
+        os: [windows-latest, ubuntu-latest, macos-latest]
+>>>>>>> d57b5bb9f4685d341ef3bda1956f1d38478f4bea
         include:
           - os: windows-latest
             executable_name: MouseMacro.exe
             asset_name: MouseMacro-Windows.exe
+<<<<<<< HEAD
           # 使用 ubuntu-20.04 以确保生成的二进制文件兼容较旧的 Linux 系统 (解决 GLIBC 错误)
           - os: ubuntu-20.04
+=======
+          - os: ubuntu-latest
+>>>>>>> d57b5bb9f4685d341ef3bda1956f1d38478f4bea
             executable_name: MouseMacro
             asset_name: MouseMacro-Linux
           - os: macos-latest
