@@ -1,0 +1,50 @@
+name: Build Macro Tool
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+            executable_name: MouseMacro.exe
+            asset_name: MouseMacro-Windows.exe
+          # 使用 ubuntu-20.04 以确保生成的二进制文件兼容较旧的 Linux 系统 (解决 GLIBC 错误)
+          - os: ubuntu-20.04
+            executable_name: MouseMacro
+            asset_name: MouseMacro-Linux
+          - os: macos-latest
+            executable_name: MouseMacro
+            asset_name: MouseMacro-macOS
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pyinstaller
+
+    - name: Build with PyInstaller
+      run: |
+        pyinstaller --onefile --name "MouseMacro" src/main.py
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ matrix.asset_name }}
+        path: dist/${{ matrix.executable_name }}

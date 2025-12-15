@@ -3,8 +3,6 @@ import os
 import platform
 from pynput import keyboard
 
-__version__ = "v2.0"
-
 from .settings import settings
 from .utils import Colors, setup_dpi_awareness
 from .recorder import MacroRecorder
@@ -48,7 +46,7 @@ def on_press(key):
 
 
 def main():
-    print(f"\n{Colors.HEADER}{Colors.BOLD}=== 全能宏工具 {__version__} (by gogei) ==={Colors.ENDC}")
+    print(f"\n{Colors.HEADER}{Colors.BOLD}=== 全能宏工具 (by gogei) ==={Colors.ENDC}")
     hk = settings.config['hotkeys']
     print(
         f"{Colors.GREEN}{hk['record'].upper():<8}{Colors.ENDC} : 开始/停止 录制 (鼠标+键盘)")
