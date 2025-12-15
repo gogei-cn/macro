@@ -13,17 +13,17 @@
 -   **配置持久化**: 支持通过 `settings.json` 自定义热键和默认设置。
 -   **DPI 感知**: 自动处理 Windows 高 DPI 缩放，防止坐标偏移。
 
-## 下载与运行 (Windows 用户)
+## 下载与运行
 
-如果您使用的是 Windows 且不想安装 Python 环境，可以直接下载 Release 页面提供的 `MouseMacro.exe`。
+无需安装 Python 环境，您可以直接从 [Releases](../../releases) 页面下载对应系统的可执行文件：
 
-1.  下载 `MouseMacro.exe`。
-2.  双击运行（首次运行会自动生成 `settings.json`）。
-3.  参照下方的热键说明进行操作。
+-   **Windows**: 下载 `MacroTool-Windows.exe`，双击运行。
+-   **Linux**: 下载 `MacroTool-Linux`，在终端运行。
+-   **macOS**: 下载 `MacroTool-macOS`，在终端运行。
 
-## 源码运行 (Windows / macOS / Linux)
+首次运行会自动生成 `settings.json` 配置文件。参照下方的热键说明进行操作。
 
-对于 macOS、Linux 用户，或希望使用源码运行的 Windows 用户：
+## 源码运行
 
 ### 1. 安装依赖
 
