@@ -1,0 +1,12 @@
+{
+    "hotkeys": {
+        "record": "f8",
+        "play": "f9",
+        "speed_up": "page_up",
+        "speed_down": "page_down",
+        "toggle_mode": "f7"
+    },
+    "default_speed": 1.0,
+    "recording_mode": "absolute",
+    "macro_filename": "macro.json"
+}
