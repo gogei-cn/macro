@@ -1,8 +1,12 @@
 import time
 import json
 from pynput import mouse, keyboard
-from .settings import settings
-from .utils import Colors
+try:
+    from .settings import settings
+    from .utils import Colors
+except ImportError:
+    from settings import settings
+    from utils import Colors
 
 class MacroRecorder:
     def __init__(self):

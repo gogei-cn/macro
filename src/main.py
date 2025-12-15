@@ -14,7 +14,7 @@ else:
     import sys
     import os
     sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-    
+
     from settings import settings
     from utils import Colors, setup_dpi_awareness
     from recorder import MacroRecorder

@@ -4,8 +4,12 @@ import threading
 from pynput import mouse, keyboard
 from pynput.mouse import Button
 from pynput.keyboard import Key, KeyCode
-from .settings import settings
-from .utils import Colors
+try:
+    from .settings import settings
+    from .utils import Colors
+except ImportError:
+    from settings import settings
+    from utils import Colors
 
 class MacroPlayer:
     def __init__(self):
