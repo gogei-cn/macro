@@ -41,14 +41,14 @@ jobs:
     - name: Generate Icon (Windows)
       if: runner.os == 'Windows'
       run: |
-        choco install imagemagick
+        choco install imagemagick --no-progress -y
         magick -background none assets/icon.svg -define icon:auto-resize=256,128,64,48,32,16 assets/icon.ico
 
     - name: Generate Icon (Linux)
       if: runner.os == 'Linux'
       run: |
         sudo apt-get install -y imagemagick
-        magick -background none assets/icon.svg assets/icon.png
+        convert -background none assets/icon.svg assets/icon.png
 
     - name: Generate Icon (macOS)
       if: runner.os == 'macOS'
