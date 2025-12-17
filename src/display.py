@@ -1,7 +1,10 @@
 import sys
 import threading
 import time
-from .utils import Colors
+try:
+    from .utils import Colors
+except ImportError:
+    from utils import Colors
 
 class DisplayManager:
     def __init__(self):

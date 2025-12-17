@@ -1,8 +1,12 @@
 import logging
 import sys
 import os
-from .utils import Colors
-from .display import display
+try:
+    from .utils import Colors
+    from .display import display
+except ImportError:
+    from utils import Colors
+    from display import display
 
 class DisplayHandler(logging.Handler):
     """Custom handler to route logs to DisplayManager"""
