@@ -13,7 +13,10 @@ class Settings:
                 "speed_down": "page_down"
             },
             "default_speed": 1.0,
-            "macro_filename": "macro.json"
+            "macro_filename": "macro.json",
+            "sample_rate": 0.016,
+            "log_level": "INFO",
+            "log_file": "macro.log"
         }
         self.load()
 
@@ -23,10 +26,9 @@ class Settings:
                 data = json.load(f)
                 if 'hotkeys' in data:
                     self.config['hotkeys'].update(data['hotkeys'])
-                if 'default_speed' in data:
-                    self.config['default_speed'] = data['default_speed']
-                if 'macro_filename' in data:
-                    self.config['macro_filename'] = data['macro_filename']
+                for key in ['default_speed', 'macro_filename', 'sample_rate', 'log_level', 'log_file']:
+                    if key in data:
+                        self.config[key] = data[key]
         except FileNotFoundError:
             print(f"未找到配置文件 {self.filename}，生成默认配置。")
             self.save()

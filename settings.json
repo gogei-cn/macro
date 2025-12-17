@@ -3,10 +3,11 @@
         "record": "f8",
         "play": "f9",
         "speed_up": "page_up",
-        "speed_down": "page_down",
-        "toggle_mode": "f7"
+        "speed_down": "page_down"
     },
     "default_speed": 1.0,
-    "recording_mode": "absolute",
-    "macro_filename": "macro.json"
+    "macro_filename": "macro.json",
+    "sample_rate": 0.016,
+    "log_level": "INFO",
+    "log_file": "macro.log"
 }
