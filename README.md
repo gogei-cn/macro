@@ -10,7 +10,6 @@
 -   **彩色界面**: 终端输出支持 ANSI 彩色显示，状态一目了然。
 -   **热键控制**: 全局热键操作，无需切换窗口即可控制录制和回放。
 -   **配置持久化**: 支持通过 `settings.json` 自定义热键和默认设置。
--   **日志系统**: 详细记录操作日志，方便排查问题。
 -   **DPI 感知**: 自动处理 Windows 高 DPI 缩放，防止坐标偏移。
 
 ## 下载与运行
@@ -68,9 +67,7 @@ python -m src.main
     },
     "default_speed": 1.0,
     "macro_filename": "macro.json",
-    "sample_rate": 0.016,
-    "log_level": "INFO",
-    "log_file": "macro.log"
+    "sample_rate": 0.016
 }
 ```
 
@@ -83,8 +80,6 @@ python -m src.main
 -   `default_speed`: 默认回放速度倍数。
 -   `macro_filename`: 录制文件的保存文件。
 -   `sample_rate`: 录制采样间隔（秒），越小越精确但文件越大。默认 0.016 (约60Hz)。
--   `log_level`: 日志输出等级 (DEBUG, INFO, WARNING, ERROR)。
--   `log_file`: 日志保存的文件名。
 
 ## 注意事项
 

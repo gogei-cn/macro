@@ -8,11 +8,9 @@ from pynput.mouse import Button
 from pynput.keyboard import Key, KeyCode
 try:
     from .settings import settings
-    from .logger import logger
     from .display import display
 except ImportError:
     from settings import settings
-    from logger import logger
     from display import display
 
 class MacroPlayer:
@@ -38,10 +36,10 @@ class MacroPlayer:
                 elif isinstance(data, dict):
                     self.events = data.get('events', [])
         except FileNotFoundError:
-            logger.error("未找到宏文件。请先录制。")
+            display.update_status("未找到宏文件")
             return
         except json.JSONDecodeError:
-            logger.error("宏文件格式错误。")
+            display.update_status("宏文件格式错误")
             return
 
         self.playing = True
@@ -50,7 +48,6 @@ class MacroPlayer:
         stop_key = settings.config['hotkeys']['play']
         display.update_status(f"正在回放... (按 {stop_key.upper()} 停止)")
         display.update_speed(self.speed)
-        logger.info(f"开始回放")
 
         self.play_thread = threading.Thread(
             target=self._play_loop, args=(repeats,))
@@ -66,7 +63,6 @@ class MacroPlayer:
             self.play_thread.join()
         display.update_status("就绪")
         display.update_progress(0, 0)
-        logger.info("回放已停止")
 
     def _parse_key(self, key_str: str) -> Union[Key, str, None]:
         if key_str.startswith('Key.'):
@@ -147,7 +143,7 @@ class MacroPlayer:
                     elif event['type'] == 'key_release':
                         self._handle_key(event, press=False)
                 except Exception as e:
-                    logger.error(f"执行事件失败: {e}")
+                    pass
         
         self.playing = False
         display.update_status("就绪")

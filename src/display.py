@@ -1,6 +1,5 @@
 import sys
 import threading
-import time
 try:
     from .utils import Colors
 except ImportError:
@@ -11,7 +10,6 @@ class DisplayManager:
         self.status = "就绪"
         self.speed = 1.0
         self.progress = (0, 0)
-        self.logs = []
         self.lock = threading.Lock()
         self.hotkeys = {}
 
@@ -31,22 +29,6 @@ class DisplayManager:
     def update_progress(self, current, total):
         with self.lock:
             self.progress = (current, total)
-        self.render()
-
-    def add_log(self, message, level="INFO"):
-        with self.lock:
-            timestamp = time.strftime("%H:%M:%S")
-            
-            color = Colors.ENDC
-            if level == "WARNING": color = Colors.YELLOW
-            elif level == "ERROR": color = Colors.RED
-            elif level == "INFO": color = Colors.GREEN
-            elif level == "DEBUG": color = Colors.CYAN
-            
-            formatted_msg = f"{timestamp} - {color}[{level:<7}]{Colors.ENDC} - {message}"
-            self.logs.append(formatted_msg)
-            if len(self.logs) > 5: # Keep last 5 logs
-                self.logs.pop(0)
         self.render()
 
     def render(self):

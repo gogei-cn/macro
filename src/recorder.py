@@ -4,11 +4,9 @@ from typing import List, Dict, Optional, Union
 from pynput import mouse, keyboard
 try:
     from .settings import settings
-    from .logger import logger
     from .display import display
 except ImportError:
     from settings import settings
-    from logger import logger
     from display import display
 
 class MacroRecorder:
@@ -106,7 +104,6 @@ class MacroRecorder:
         
         stop_key = settings.config['hotkeys']['record']
         display.update_status(f"正在录制... (按 {stop_key.upper()} 停止)")
-        logger.info(f"开始录制")
 
         self.mouse_listener = mouse.Listener(
             on_move=self.on_move,
@@ -133,7 +130,6 @@ class MacroRecorder:
             self.keyboard_listener = None
             
         display.update_status("正在保存...")
-        logger.info("录制结束")
         self.save()
         display.update_status("就绪")
 
@@ -143,6 +139,5 @@ class MacroRecorder:
         try:
             with open(filename, 'w') as f:
                 json.dump(self.events, f)
-            logger.info(f"宏已保存到 {filename} (共 {len(self.events)} 个事件)")
         except Exception as e:
-            logger.error(f"保存宏文件失败: {e}")
+            pass
