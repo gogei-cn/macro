@@ -22,7 +22,7 @@ class MacroRecorder:
 
     def on_move(self, x: int, y: int) -> None:
         if self.recording:
-            current_time = time.time()
+            current_time = time.perf_counter()
             if current_time - self.last_record_time < self.sample_rate:
                 return
             self.last_record_time = current_time
@@ -36,7 +36,7 @@ class MacroRecorder:
 
     def on_click(self, x: int, y: int, button: mouse.Button, pressed: bool) -> None:
         if self.recording:
-            elapsed = time.time() - self.start_time
+            elapsed = time.perf_counter() - self.start_time
             self.events.append({
                 'type': 'click',
                 'time': elapsed,
@@ -48,7 +48,7 @@ class MacroRecorder:
 
     def on_scroll(self, x: int, y: int, dx: int, dy: int) -> None:
         if self.recording:
-            elapsed = time.time() - self.start_time
+            elapsed = time.perf_counter() - self.start_time
             self.events.append({
                 'type': 'scroll',
                 'time': elapsed,
@@ -60,11 +60,10 @@ class MacroRecorder:
 
     def on_key_press(self, key: Union[keyboard.Key, keyboard.KeyCode]) -> None:
         if self.recording:
-            stop_key = settings.get_key('record')
-            if key == stop_key:
+            if key == self.stop_key:
                 return
 
-            elapsed = time.time() - self.start_time
+            elapsed = time.perf_counter() - self.start_time
             try:
                 key_data = key.char
             except AttributeError:
@@ -78,11 +77,10 @@ class MacroRecorder:
 
     def on_key_release(self, key: Union[keyboard.Key, keyboard.KeyCode]) -> None:
         if self.recording:
-            stop_key = settings.get_key('record')
-            if key == stop_key:
+            if key == self.stop_key:
                 return
 
-            elapsed = time.time() - self.start_time
+            elapsed = time.perf_counter() - self.start_time
             try:
                 key_data = key.char
             except AttributeError:
@@ -99,11 +97,13 @@ class MacroRecorder:
             return
         self.events = []
         self.recording = True
-        self.start_time = time.time()
+        self.start_time = time.perf_counter()
         self.last_record_time = self.start_time
         
-        stop_key = settings.config['hotkeys']['record']
-        display.update_status(f"正在录制... (按 {stop_key.upper()} 停止)")
+        # Cache stop key to avoid lookup in event handlers
+        self.stop_key = settings.get_key('record')
+        
+        display.update_status("正在录制")
 
         self.mouse_listener = mouse.Listener(
             on_move=self.on_move,
@@ -129,7 +129,7 @@ class MacroRecorder:
             self.keyboard_listener.stop()
             self.keyboard_listener = None
             
-        display.update_status("正在保存...")
+        display.update_status("正在保存")
         self.save()
         display.update_status("就绪")
 

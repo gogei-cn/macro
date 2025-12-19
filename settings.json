@@ -8,6 +8,13 @@
     "default_speed": 1.0,
     "macro_filename": "macro.json",
     "sample_rate": 0.016,
-    "log_level": "INFO",
-    "log_file": "macro.log"
+    "theme": {
+        "title": "BRIGHT_CYAN",
+        "border": "BRIGHT_BLUE",
+        "label": "BRIGHT_WHITE",
+        "status_recording": "BRIGHT_RED",
+        "status_playing": "BRIGHT_GREEN",
+        "progress_bar": "BRIGHT_CYAN",
+        "guide_title": "BRIGHT_YELLOW"
+    }
 }

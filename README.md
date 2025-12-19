@@ -9,6 +9,7 @@
 -   **速度控制**: 支持实时调整回放速度（加速/减速）。
 -   **彩色界面**: 终端输出支持 ANSI 彩色显示，状态一目了然。
 -   **热键控制**: 全局热键操作，无需切换窗口即可控制录制和回放。
+-   **自定义主题**: 支持自定义界面各个部分的颜色。
 -   **配置持久化**: 支持通过 `settings.json` 自定义热键和默认设置。
 -   **DPI 感知**: 自动处理 Windows 高 DPI 缩放，防止坐标偏移。
 
@@ -67,7 +68,16 @@ python -m src.main
     },
     "default_speed": 1.0,
     "macro_filename": "macro.json",
-    "sample_rate": 0.016
+    "sample_rate": 0.016,
+    "theme": {
+        "title": "HEADER",
+        "border": "HEADER",
+        "label": "BOLD",
+        "status_recording": "GREEN",
+        "status_playing": "CYAN",
+        "progress_bar": "BLUE",
+        "guide_title": "BOLD"
+    }
 }
 ```
 
@@ -80,6 +90,10 @@ python -m src.main
 -   `default_speed`: 默认回放速度倍数。
 -   `macro_filename`: 录制文件的保存文件。
 -   `sample_rate`: 录制采样间隔（秒），越小越精确但文件越大。默认 0.016 (约60Hz)。
+-   `theme`: 界面颜色主题配置。
+    -   可用标准颜色: `BLACK`, `RED`, `GREEN`, `YELLOW`, `BLUE`, `MAGENTA`, `CYAN`, `WHITE`
+    -   可用高亮颜色: `BRIGHT_BLACK`, `BRIGHT_RED`, `BRIGHT_GREEN`, `BRIGHT_YELLOW`, `BRIGHT_BLUE`, `BRIGHT_MAGENTA`, `BRIGHT_CYAN`, `BRIGHT_WHITE`
+    -   其他: `BOLD`, `ENDC`, `HEADER`
 
 ## 注意事项
 
