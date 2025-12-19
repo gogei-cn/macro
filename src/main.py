@@ -2,7 +2,17 @@ import sys
 import os
 import time
 import platform
-from pynput import keyboard
+
+try:
+    from pynput import keyboard
+except ImportError as e:
+    print("\n错误: 无法加载输入控制模块 (pynput)。")
+    if platform.system() == 'Linux':
+        print("在 Linux 系统上，此程序需要 X Server 图形环境。")
+        print("如果您在纯命令行或 SSH 环境中运行，请确保已设置 DISPLAY 环境变量 (例如: export DISPLAY=:0)。")
+        print("如果是无头服务器，您可能需要安装 Xvfb。")
+    print(f"详细错误信息: {e}\n")
+    sys.exit(1)
 
 # Handle imports whether running as a package or a script
 if __package__:
