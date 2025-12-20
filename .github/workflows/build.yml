@@ -15,15 +15,18 @@ jobs:
                     - os: windows-latest
                       executable_name: MacroTool.exe
                       asset_name: MacroTool-Windows.exe
-                      icon_arg: --windows-icon-from-ico=assets/icon.ico
+                      build_args: --onefile --windows-icon-from-ico=assets/icon.ico
+                      artifact_path: dist/MacroTool.exe
                     - os: ubuntu-latest
                       executable_name: MacroTool
                       asset_name: MacroTool-Linux
-                      icon_arg: --linux-icon=assets/icon.png
+                      build_args: --onefile --linux-icon=assets/icon.png
+                      artifact_path: dist/MacroTool
                     - os: macos-latest
                       executable_name: MacroTool
-                      asset_name: MacroTool-macOS
-                      icon_arg: --macos-app-icon=assets/icon.icns
+                      asset_name: MacroTool-macOS.app
+                      build_args: --macos-create-app-bundle --macos-app-icon=assets/icon.icns
+                      artifact_path: dist/MacroTool.app
 
         runs-on: ${{ matrix.os }}
 
@@ -46,9 +49,9 @@ jobs:
                   pip install nuitka zstandard ordered-set
             - name: Build with Nuitka
               run: |
-                  python -m nuitka --onefile --standalone --assume-yes-for-downloads --output-dir=dist --output-filename=${{ matrix.executable_name }} ${{ matrix.icon_arg }} src/main.py
+                  python -m nuitka --standalone --assume-yes-for-downloads --output-dir=dist --output-filename=${{ matrix.executable_name }} ${{ matrix.build_args }} src/main.py
             - name: Upload Artifact
               uses: actions/upload-artifact@v4
               with:
                   name: ${{ matrix.asset_name }}
-                  path: dist/${{ matrix.executable_name }}
+                  path: ${{ matrix.artifact_path }}
