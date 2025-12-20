@@ -18,7 +18,7 @@ jobs:
           - os: windows-latest
             executable_name: MacroTool.exe
             asset_name: MacroTool-Windows.exe
-          - os: ubuntu-latest
+          - os: ubuntu-20.04
             executable_name: MacroTool
             asset_name: MacroTool-Linux
           - os: macos-latest

@@ -126,31 +126,32 @@ class MacroPlayer:
                 wait_time = target_time - current_time
 
                 if wait_time > 0:
-                    # Break long waits into chunks to update progress bar
-                    while wait_time > 0.1:
-                        if self.stop_event.wait(0.1):
+                    # High precision wait loop
+                    while wait_time > 0:
+                        if self.stop_event.is_set():
                             break
                         
-                        # Update progress
-                        elapsed = (time.perf_counter() - start_time) * self.speed
-                        display.update_progress(min(elapsed, total_duration), total_duration)
-                        
-                        current_time = time.perf_counter()
-                        wait_time = target_time - current_time
-                        
-                    if self.stop_event.is_set():
-                        break
-                        
-                    if wait_time > 0:
-                        if self.stop_event.wait(wait_time):
-                            break
+                        # Update progress if enough time has passed (e.g. > 0.1s)
+                        # Only update if we have enough slack time (> 20ms) to avoid jitter
+                        if wait_time > 0.02 and (time.perf_counter() - last_progress_update > 0.1):
+                            elapsed = (time.perf_counter() - start_time) * self.speed
+                            display.update_progress(min(elapsed, total_duration), total_duration)
+                            last_progress_update = time.perf_counter()
+                            # Recalculate wait_time after update
+                            wait_time = target_time - time.perf_counter()
+                            continue
 
-                # Update progress at event execution
-                if i == total_events - 1:
-                     display.update_progress(total_duration, total_duration)
-                elif time.perf_counter() - last_progress_update > 0.1:
-                    display.update_progress(event['time'], total_duration)
-                    last_progress_update = time.perf_counter()
+                        # Sleep strategy
+                        if wait_time > 0.002: # Sleep for longer waits (> 2ms)
+                            time.sleep(0.001)
+                        else:
+                            # Busy wait for the last 2ms for maximum precision
+                            pass
+                        
+                        wait_time = target_time - time.perf_counter()
+
+                if self.stop_event.is_set():
+                    break
 
                 try:
                     if event['type'] == 'move':
@@ -165,6 +166,10 @@ class MacroPlayer:
                         self._handle_key(event, press=False)
                 except Exception as e:
                     pass
+                
+                # Update progress after event if needed (for long gaps between events)
+                if i == total_events - 1:
+                     display.update_progress(total_duration, total_duration)
         
         self.playing = False
         display.update_status("就绪")

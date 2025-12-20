@@ -19,6 +19,7 @@
 
 -   **Windows**: 下载 `MacroTool-Windows.exe`，双击运行。
 -   **Linux**: 下载 `MacroTool-Linux`，在终端运行。
+    > **注意**: 由于 Linux 发行版环境差异大（如 Wayland/X11、Glibc 版本），如果二进制文件无法运行，请直接使用 [源码运行](#源码运行) 方式。
 -   **macOS**: 下载 `MacroTool-macOS`，在终端运行。
 
 首次运行会自动生成 `settings.json` 配置文件。参照下方的热键说明进行操作。
@@ -33,7 +34,17 @@
 pip install -r requirements.txt
 ```
 
-> **Linux 用户注意**: 可能需要安装额外的系统库（如 `python3-tk`, `python3-dev` 或 `xlib`），具体取决于您的发行版。
+**Linux 用户注意**:
+
+1. 可能需要安装额外的系统库（如 `python3-tk`, `python3-dev` 或 `xlib`），具体取决于您的发行版。
+
+2. 如果遇到 `externally-managed-environment` 错误（常见于 Kali/Debian 12+），请使用虚拟环境：
+
+```bash
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
 
 ### 2. 运行脚本
 
@@ -47,12 +58,12 @@ python -m src.main
 
 使用以下默认热键进行控制：
 
-    | 功能               | 默认热键    | 说明                                            |
-    | :----------------- | :---------- | :---------------------------------------------- |
-    | **开始/停止 录制** | `F8`        | 开始新的录制（鼠标+键盘），再次按下停止并保存。 |
-    | **开始/停止 回放** | `F9`        | 开始回放当前宏，再次按下停止。                  |
-    | **增加速度**       | `Page Up`   | 每次增加 0.5x 播放速度。                        |
-    | **减少速度**       | `Page Down` | 每次减少 0.5x 播放速度 (最低 0.1x)。            |
+| 功能               | 默认热键    | 说明                                            |
+| :----------------- | :---------- | :---------------------------------------------- |
+| **开始/停止 录制** | `F8`        | 开始新的录制（鼠标+键盘），再次按下停止并保存。 |
+| **开始/停止 回放** | `F9`        | 开始回放当前宏，再次按下停止。                  |
+| **增加速度**       | `Page Up`   | 每次增加 0.5x 播放速度。                        |
+| **减少速度**       | `Page Down` | 每次减少 0.5x 播放速度 (最低 0.1x)。            |
 
 ## 配置文件 (settings.json)
 
@@ -89,7 +100,7 @@ python -m src.main
 -   `speed_down`: 减少速度热键。
 -   `default_speed`: 默认回放速度倍数。
 -   `macro_filename`: 录制文件的保存文件。
--   `sample_rate`: 录制采样间隔（秒），越小越精确但文件越大。默认 0.016 (约60Hz)。
+-   `sample_rate`: 录制采样间隔（秒），越小越精确但文件越大。默认 0.016 (约 60Hz)。
 -   `theme`: 界面颜色主题配置。
     -   可用标准颜色: `BLACK`, `RED`, `GREEN`, `YELLOW`, `BLUE`, `MAGENTA`, `CYAN`, `WHITE`
     -   可用高亮颜色: `BRIGHT_BLACK`, `BRIGHT_RED`, `BRIGHT_GREEN`, `BRIGHT_YELLOW`, `BRIGHT_BLUE`, `BRIGHT_MAGENTA`, `BRIGHT_CYAN`, `BRIGHT_WHITE`

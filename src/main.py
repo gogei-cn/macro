@@ -3,6 +3,17 @@ import os
 import time
 import platform
 
+# Linux 环境下的预检查
+if platform.system() == 'Linux':
+    if not os.environ.get('DISPLAY'):
+        print("\n错误: 未检测到 DISPLAY 环境变量。")
+        print("此程序依赖于 X Server (图形界面) 来监听和控制键盘/鼠标。")
+        print("解决方案:")
+        print("1. 如果您在图形界面终端中，请尝试运行: export DISPLAY=:0")
+        print("2. 如果您通过 SSH 连接，请使用 'ssh -X' 开启 X11 转发。")
+        print("3. 如果是无头服务器，请安装并使用 Xvfb: xvfb-run python src/main.py")
+        sys.exit(1)
+
 try:
     from pynput import keyboard
 except ImportError as e:
