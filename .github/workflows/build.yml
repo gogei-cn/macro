@@ -20,7 +20,7 @@ jobs:
             asset_name: MacroTool-Linux
           - os: macos-latest
             executable_name: MacroTool.app
-            asset_name: MacroTool-macOS.zip
+            asset_name: MacroTool.app
 
     runs-on: ${{ matrix.os }}
 
@@ -44,22 +44,14 @@ jobs:
 
     - name: Build with Nuitka (Linux)
       if: runner.os == 'Linux'
-      run: python -m nuitka --standalone --onefile --output-dir=dist --output-filename=MacroTool --linux-icon=assets/icon.png src/main.py
+      run: python -m nuitka --standalone --onefile --output-dir=dist --output-filename=MacroTool --linux-icon=assets/icon.png --include-package=keyboard --include-package=mouse src/main.py
 
     - name: Build with Nuitka (macOS)
       if: runner.os == 'macOS'
       run: python -m nuitka --standalone --macos-create-app-bundle --output-dir=dist --output-filename=MacroTool src/main.py
 
-    - name: Package macOS
-      if: runner.os == 'macOS'
-      run: |
-        cd dist
-        zip -r ${{ matrix.asset_name }} ${{ matrix.executable_name }}
-
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
         name: ${{ matrix.asset_name }}
-        path: |
-          dist/${{ matrix.executable_name }}
-          dist/${{ matrix.asset_name }}
+        path: dist/${{ matrix.executable_name }}

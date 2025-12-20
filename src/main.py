@@ -3,26 +3,21 @@ import os
 import time
 import platform
 
-# Linux 环境下的 Root 权限检查
-if platform.system() == 'Linux':
-    if os.geteuid() != 0:
-        print("\n错误: 权限不足。")
-        print("在 Linux 上，此程序需要 Root 权限才能访问输入设备 (/dev/input/)。")
-        print("请尝试使用 sudo 运行: sudo python src/main.py")
-        sys.exit(1)
-
-try:
-    import keyboard
-    import mouse
-except ImportError as e:
-    print("\n错误: 无法加载输入控制模块 (keyboard/mouse)。")
-    print(f"详细错误信息: {e}\n")
-    sys.exit(1)
-
 # Add the current directory to sys.path to ensure imports work
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from settings import settings
+
+# Check for pynput
+try:
+    import pynput
+    from pynput import keyboard as pynput_keyboard
+except ImportError as e:
+    print("\n错误: 无法加载 pynput 模块。")
+    print(f"详细错误信息: {e}\n")
+    input("按回车键退出...")
+    sys.exit(1)
+
 from utils import Colors, setup_dpi_awareness
 from recorder import MacroRecorder
 from player import MacroPlayer
@@ -30,6 +25,7 @@ from display import display
 
 class MacroApp:
     def __init__(self):
+        self.old_settings = None
         self.setup_environment()
         self.recorder = MacroRecorder()
         self.player = MacroPlayer()
@@ -41,6 +37,25 @@ class MacroApp:
         # Clear screen on startup
         sys.stdout.write("\033[2J\033[H")
         sys.stdout.flush()
+        
+        # Disable terminal echo on Linux to prevent key leakage
+        if platform.system() == 'Linux':
+            try:
+                import termios
+                self.fd = sys.stdin.fileno()
+                self.old_settings = termios.tcgetattr(self.fd)
+                new_settings = termios.tcgetattr(self.fd)
+                # Disable ECHO
+                new_settings[3] = new_settings[3] & ~termios.ECHO
+                termios.tcsetattr(self.fd, termios.TCSADRAIN, new_settings)
+            except Exception:
+                pass
+
+    def cleanup(self):
+        # Restore terminal settings
+        if self.old_settings:
+            import termios
+            termios.tcsetattr(self.fd, termios.TCSADRAIN, self.old_settings)
 
     def handle_record_toggle(self):
         if self.recorder.recording:
@@ -73,16 +88,28 @@ class MacroApp:
             display.update_speed(self.player.speed)
             self.last_speed_change = current_time
 
-    def on_press(self, event):
+    def on_press(self, key):
         try:
-            key = event.name.lower()
-            if key == settings.get_key('record'):
+            # Convert pynput key to string format matching settings
+            key_name = None
+            try:
+                key_name = key.char
+            except AttributeError:
+                key_name = str(key).replace('Key.', '')
+            
+            if not key_name:
+                return
+
+            # Normalize (e.g. page_up -> page up)
+            key_name = key_name.replace('_', ' ').lower()
+
+            if key_name == settings.get_key('record'):
                 self.handle_record_toggle()
-            elif key == settings.get_key('play'):
+            elif key_name == settings.get_key('play'):
                 self.handle_play_toggle()
-            elif key == settings.get_key('speed_up'):
+            elif key_name == settings.get_key('speed_up'):
                 self.handle_speed_change(0.5)
-            elif key == settings.get_key('speed_down'):
+            elif key_name == settings.get_key('speed_down'):
                 self.handle_speed_change(-0.5)
         except Exception:
             pass
@@ -92,20 +119,25 @@ class MacroApp:
         display.set_hotkeys(settings.config['hotkeys'])
         display.render()
         
-        # Register the callback
-        keyboard.on_press(self.on_press)
-        
-        # Keep the main thread alive
-        try:
-            while True:
-                time.sleep(0.1)
-        except KeyboardInterrupt:
-            pass
+        # Register the callback using pynput
+        with pynput_keyboard.Listener(on_press=self.on_press) as listener:
+            try:
+                listener.join()
+            except KeyboardInterrupt:
+                pass
 
 def main():
-    app = MacroApp()
-    app.run()
-
+    app = None
+    try:
+        app = MacroApp()
+        app.run()
+    except Exception:
+        import traceback
+        traceback.print_exc()
+        input("\n程序发生严重错误，按回车键退出...")
+    finally:
+        if app:
+            app.cleanup()
 
 if __name__ == "__main__":
     main()

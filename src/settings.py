@@ -41,8 +41,13 @@ class Settings:
             self.save()
 
     def save(self):
-        with open(self.filename, 'w') as f:
-            json.dump(self.config, f, indent=4)
+        try:
+            with open(self.filename, 'w') as f:
+                json.dump(self.config, f, indent=4)
+        except PermissionError:
+            print(f"警告: 无法保存配置文件 {self.filename} (权限不足)。请检查文件所有权。")
+        except Exception as e:
+            print(f"警告: 无法保存配置文件 {self.filename} ({e})。")
 
     def get_key(self, action):
         key_str = self.config['hotkeys'].get(action)
