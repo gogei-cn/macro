@@ -186,12 +186,7 @@ class DisplayManager:
         else:
             lines.append(f"{border_color}{V}{Colors.ENDC}{self._center_text('加载中...', width - 2)}{border_color}{V}{Colors.ENDC}")
 
-        # 9. Footer (Ctrl+C)
-        lines.append(f"{border_color}{M_L}{H * (width - 2)}{M_R}{Colors.ENDC}")
-        footer_text = f"{Colors.BRIGHT_BLACK}Ctrl+C 退出{Colors.ENDC}"
-        lines.append(f"{border_color}{V}{Colors.ENDC}{self._center_text(footer_text, width - 2)}{border_color}{V}{Colors.ENDC}")
-
-        # 10. Bottom Border
+        # 9. Bottom Border
         lines.append(f"{border_color}{BL}{H * (width - 2)}{BR}{Colors.ENDC}")
 
         # Output
