@@ -3,14 +3,10 @@ import json
 import threading
 from typing import List, Dict, Optional, Union, Any
 
-try:
-    from pynput import mouse as pynput_mouse
-    from pynput import keyboard as pynput_keyboard
-    from pynput.mouse import Button
-    from pynput.keyboard import Key
-except ImportError:
-    pynput_mouse = None
-    pynput_keyboard = None
+from pynput import mouse as pynput_mouse
+from pynput import keyboard as pynput_keyboard
+from pynput.mouse import Button
+from pynput.keyboard import Key
 
 from settings import settings
 from display import display
@@ -22,8 +18,8 @@ class MacroPlayer:
         self.speed: float = settings.config['default_speed']
         self.play_thread: Optional[threading.Thread] = None
         self.events: List[Dict[str, Any]] = []
-        self.pynput_mouse_controller = pynput_mouse.Controller() if pynput_mouse else None
-        self.pynput_keyboard_controller = pynput_keyboard.Controller() if pynput_keyboard else None
+        self.pynput_mouse_controller = pynput_mouse.Controller()
+        self.pynput_keyboard_controller = pynput_keyboard.Controller()
 
     def start(self, filename: Optional[str] = None) -> None:
         if filename is None:
@@ -64,36 +60,32 @@ class MacroPlayer:
             self.play_thread.join()
 
     def _handle_move(self, event: Dict[str, Any]) -> None:
-        if self.pynput_mouse_controller:
-            self.pynput_mouse_controller.position = (event['x'], event['y'])
+        self.pynput_mouse_controller.position = (event['x'], event['y'])
 
     def _handle_click(self, event: Dict[str, Any]) -> None:
-        if self.pynput_mouse_controller:
-            btn_str = event.get('button', 'left')
-            btn = getattr(Button, btn_str, Button.left)
-            if event['pressed']:
-                self.pynput_mouse_controller.press(btn)
-            else:
-                self.pynput_mouse_controller.release(btn)
+        btn_str = event.get('button', 'left')
+        btn = getattr(Button, btn_str, Button.left)
+        if event['pressed']:
+            self.pynput_mouse_controller.press(btn)
+        else:
+            self.pynput_mouse_controller.release(btn)
 
     def _handle_scroll(self, event: Dict[str, Any]) -> None:
-        if self.pynput_mouse_controller:
-            self.pynput_mouse_controller.scroll(event.get('dx', 0), event.get('dy', 0))
+        self.pynput_mouse_controller.scroll(event.get('dx', 0), event.get('dy', 0))
 
     def _handle_key(self, event: Dict[str, Any]) -> None:
         key = event.get('key')
         if not key: return
         
-        if self.pynput_keyboard_controller:
-            try:
-                # Try to get Key object (e.g. Key.enter)
-                k = getattr(Key, key, key)
-                if event['type'] == 'key_press':
-                    self.pynput_keyboard_controller.press(k)
-                else:
-                    self.pynput_keyboard_controller.release(k)
-            except Exception:
-                pass
+        try:
+            # 尝试获取 Key 对象 (例如 Key.enter)
+            k = getattr(Key, key, key)
+            if event['type'] == 'key_press':
+                self.pynput_keyboard_controller.press(k)
+            else:
+                self.pynput_keyboard_controller.release(k)
+        except Exception:
+            pass
 
     def _play_loop(self) -> None:
         if not self.events:
@@ -112,11 +104,11 @@ class MacroPlayer:
                 if self.stop_event.is_set():
                     break
 
-                # Calculate target time
+                # 计算目标时间
                 target_time = (event['time'] - event_start_time) / self.speed
                 current_elapsed = time.perf_counter() - start_time
                 
-                # Update progress periodically (every 0.1s)
+                # 定期更新进度 (每 0.1 秒)
                 if time.perf_counter() - last_progress_update > 0.1:
                     display.update_progress(min(current_elapsed * self.speed, total_duration), total_duration)
                     last_progress_update = time.perf_counter()
@@ -137,12 +129,12 @@ class MacroPlayer:
                 except Exception as e:
                     print(f"Playback error: {e}")
             
-            # Update progress to 100% at the end of loop
+            # 循环结束时更新进度到 100%
             display.update_progress(total_duration, total_duration)
 
-            # Loop check
+            # 循环检查
             if not self.stop_event.is_set():
-                time.sleep(0.1) # Small pause between loops
+                time.sleep(0.1) # 循环之间的小暂停
             else:
                 break
         

@@ -3,20 +3,13 @@ import os
 import time
 import platform
 
-# Add the current directory to sys.path to ensure imports work
+# 将当前目录添加到 sys.path 以确保导入正常工作
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from settings import settings
 
-# Check for pynput
-try:
-    import pynput
-    from pynput import keyboard as pynput_keyboard
-except ImportError as e:
-    print("\n错误: 无法加载 pynput 模块。")
-    print(f"详细错误信息: {e}\n")
-    input("按回车键退出...")
-    sys.exit(1)
+import pynput
+from pynput import keyboard as pynput_keyboard
 
 from utils import Colors, setup_dpi_awareness
 from recorder import MacroRecorder
@@ -34,25 +27,29 @@ class MacroApp:
 
     def setup_environment(self):
         setup_dpi_awareness()
-        # Clear screen on startup
-        sys.stdout.write("\033[2J\033[H")
+        # 启动时清空屏幕并隐藏光标
+        sys.stdout.write("\033[2J\033[H\033[?25l")
         sys.stdout.flush()
         
-        # Disable terminal echo on Linux to prevent key leakage
+        # 在 Linux 上禁用终端回显以防止按键泄露
         if platform.system() == 'Linux':
             try:
                 import termios
                 self.fd = sys.stdin.fileno()
                 self.old_settings = termios.tcgetattr(self.fd)
                 new_settings = termios.tcgetattr(self.fd)
-                # Disable ECHO
+                # 禁用回显
                 new_settings[3] = new_settings[3] & ~termios.ECHO
                 termios.tcsetattr(self.fd, termios.TCSADRAIN, new_settings)
             except Exception:
                 pass
 
     def cleanup(self):
-        # Restore terminal settings
+        # 显示光标
+        sys.stdout.write("\033[?25h")
+        sys.stdout.flush()
+
+        # 恢复终端设置
         if self.old_settings:
             import termios
             termios.tcsetattr(self.fd, termios.TCSADRAIN, self.old_settings)
@@ -80,7 +77,7 @@ class MacroApp:
         if current_time - self.last_speed_change > self.speed_cooldown:
             new_speed = self.player.speed + delta
             
-            # Special handling for 0.1 -> 0.5 step
+            # 特殊处理 0.1 -> 0.5 的步长
             if delta > 0 and self.player.speed < 0.5:
                 new_speed = 0.5
             
@@ -90,7 +87,7 @@ class MacroApp:
 
     def on_press(self, key):
         try:
-            # Convert pynput key to string format matching settings
+            # 将 pynput 按键转换为匹配设置的字符串格式
             key_name = None
             try:
                 key_name = key.char
@@ -100,7 +97,7 @@ class MacroApp:
             if not key_name:
                 return
 
-            # Normalize (e.g. page_up -> page up)
+            # 标准化 (例如 page_up -> page up)
             key_name = key_name.replace('_', ' ').lower()
 
             if key_name == settings.get_key('record'):
@@ -115,11 +112,11 @@ class MacroApp:
             pass
 
     def run(self):
-        # Initialize display with hotkeys
+        # 初始化显示热键
         display.set_hotkeys(settings.config['hotkeys'])
         display.render()
         
-        # Register the callback using pynput
+        # 使用 pynput 注册回调
         with pynput_keyboard.Listener(on_press=self.on_press) as listener:
             try:
                 listener.join()

@@ -6,7 +6,7 @@ if platform.system() == 'Windows':
     os.system('')
 
 class Colors:
-    # Standard ANSI Colors
+    # 标准 ANSI 颜色
     BLACK = '\033[30m'
     RED = '\033[31m'
     GREEN = '\033[32m'
@@ -16,7 +16,7 @@ class Colors:
     CYAN = '\033[36m'
     WHITE = '\033[37m'
     
-    # High Intensity Colors
+    # 高亮颜色
     BRIGHT_BLACK = '\033[90m'
     BRIGHT_RED = '\033[91m'
     BRIGHT_GREEN = '\033[92m'
@@ -26,14 +26,14 @@ class Colors:
     BRIGHT_CYAN = '\033[96m'
     BRIGHT_WHITE = '\033[97m'
 
-    # Aliases for backward compatibility
+    # 向后兼容的别名
     HEADER = BRIGHT_MAGENTA
     ENDC = '\033[0m'
     BOLD = '\033[1m'
 
     @staticmethod
     def get(name):
-        """Get color code by name (case-insensitive)"""
+        """根据名称获取颜色代码 (不区分大小写)"""
         if not isinstance(name, str):
             return Colors.ENDC
         return getattr(Colors, name.upper(), Colors.ENDC)

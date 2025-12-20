@@ -14,12 +14,12 @@ class Settings:
             "macro_filename": "macro.json",
             "sample_rate": 0.016,
             "theme": {
-                "title": "BRIGHT_CYAN",
-                "border": "BRIGHT_BLUE",
-                "label": "BRIGHT_WHITE",
+                "title": "BRIGHT_MAGENTA",
+                "border": "BRIGHT_BLACK",
+                "label": "CYAN",
                 "status_recording": "BRIGHT_RED",
                 "status_playing": "BRIGHT_GREEN",
-                "progress_bar": "BRIGHT_CYAN",
+                "progress_bar": "BRIGHT_GREEN",
                 "guide_title": "BRIGHT_YELLOW"
             }
         }
@@ -53,7 +53,7 @@ class Settings:
         key_str = self.config['hotkeys'].get(action)
         if not key_str:
             return None
-        # Normalize for keyboard library (e.g. page_up -> page up)
+        # 标准化以适配键盘库 (例如 page_up -> page up)
         return key_str.replace('_', ' ').lower()
 
 settings = Settings()

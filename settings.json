@@ -9,12 +9,12 @@
     "macro_filename": "macro.json",
     "sample_rate": 0.016,
     "theme": {
-        "title": "BRIGHT_CYAN",
-        "border": "BRIGHT_BLUE",
-        "label": "BRIGHT_WHITE",
+        "title": "BRIGHT_MAGENTA",
+        "border": "BRIGHT_BLACK",
+        "label": "CYAN",
         "status_recording": "BRIGHT_RED",
         "status_playing": "BRIGHT_GREEN",
-        "progress_bar": "BRIGHT_CYAN",
+        "progress_bar": "BRIGHT_GREEN",
         "guide_title": "BRIGHT_YELLOW"
     }
 }

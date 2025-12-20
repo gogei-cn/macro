@@ -1,6 +1,13 @@
-# 全能宏工具 (Macro Tool)
+# 全能宏工具 (Macro Tool) v2.1
 
 这是一个基于 Python 的轻量级宏录制与回放工具。它可以精确记录您的**鼠标**移动、点击、滚动以及**键盘**按键操作，并支持以不同的速度无限循环回放。非常适合重复性的任务或自动化测试。
+
+## v2.1 更新内容
+
+-   **全新 UI**: 现代化的终端界面，支持自定义主题配色。
+-   **兼容性提升**: 移除 `keyboard`/`mouse` 依赖，全面转向 `pynput`，完美支持 Linux/macOS 及虚拟机环境。
+-   **体验优化**: 修复中文对齐问题，增加隐藏光标功能，操作更流畅。
+-   **构建优化**: 采用 Nuitka 单文件构建，体积更小，启动更快。
 
 ## 主要功能
 
@@ -19,10 +26,11 @@
 
 -   **Windows**: 下载 `MacroTool-Windows.exe`，双击运行。
 -   **Linux**: 下载 `MacroTool-Linux`，在终端运行。
-    > **注意**: 由于 Linux 发行版环境差异大（如 Wayland/X11、Glibc 版本），如果二进制文件无法运行，请直接使用 [源码运行](#源码运行) 方式。
 -   **macOS**: 下载 `MacroTool-macOS`，在终端运行。
 
 首次运行会自动生成 `settings.json` 配置文件。参照下方的热键说明进行操作。
+
+如果无法运行可执行文件，请使用源码方式运行，具体步骤见下文。
 
 ## 源码运行
 
@@ -31,24 +39,6 @@
 本项目依赖 `pynput` 库。请确保安装了 Python 3.x。
 
 ```bash
-pip install -r requirements.txt
-```
-
-**Linux 用户 (Kali/Debian/Ubuntu) 注意**:
-
-如果您使用的是 Kali、Debian 或 Ubuntu 系统，建议通过以下步骤创建虚拟环境并安装依赖，以避免系统权限问题：
-
-```bash
-# 1. 安装 venv (如果尚未安装)
-sudo apt install python3-venv
-
-# 2. 创建虚拟环境
-python3 -m venv venv
-
-# 3. 激活环境
-source venv/bin/activate
-
-# 4. 安装依赖
 pip install -r requirements.txt
 ```
 
@@ -120,4 +110,4 @@ python src/main.py
 
 ## 作者
 
-Created by **gogei**
+Designed by [gogei](https://gogei.netlify.app/about/)

@@ -4,12 +4,8 @@ import os
 import sys
 from typing import List, Dict, Optional, Union
 
-try:
-    from pynput import mouse as pynput_mouse
-    from pynput import keyboard as pynput_keyboard
-except ImportError:
-    pynput_mouse = None
-    pynput_keyboard = None
+from pynput import mouse as pynput_mouse
+from pynput import keyboard as pynput_keyboard
 
 from settings import settings
 from display import display
@@ -24,7 +20,7 @@ class MacroRecorder:
         self.pynput_mouse_listener = None
         self.pynput_keyboard_listener = None
 
-    # Pynput callbacks
+    # Pynput 回调函数
     def _pynput_on_move(self, x, y):
         if not self.recording: return
         current_time = time.perf_counter()
@@ -56,7 +52,7 @@ class MacroRecorder:
         except AttributeError:
             k = str(key).replace('Key.', '')
         
-        # Stop key check (simplified)
+        # 停止键检查 (简化版)
         if k == self.stop_key: return
 
         elapsed = time.perf_counter() - self.start_time
@@ -85,20 +81,16 @@ class MacroRecorder:
         self.stop_key = settings.get_key('record')
         display.update_status("正在录制")
 
-        if pynput_mouse and pynput_keyboard:
-            self.pynput_mouse_listener = pynput_mouse.Listener(
-                on_move=self._pynput_on_move,
-                on_click=self._pynput_on_click,
-                on_scroll=self._pynput_on_scroll)
-            self.pynput_mouse_listener.start()
-            
-            self.pynput_keyboard_listener = pynput_keyboard.Listener(
-                on_press=self._pynput_on_press,
-                on_release=self._pynput_on_release)
-            self.pynput_keyboard_listener.start()
-        else:
-            print("Error: pynput modules not found.")
-            self.recording = False
+        self.pynput_mouse_listener = pynput_mouse.Listener(
+            on_move=self._pynput_on_move,
+            on_click=self._pynput_on_click,
+            on_scroll=self._pynput_on_scroll)
+        self.pynput_mouse_listener.start()
+        
+        self.pynput_keyboard_listener = pynput_keyboard.Listener(
+            on_press=self._pynput_on_press,
+            on_release=self._pynput_on_release)
+        self.pynput_keyboard_listener.start()
 
     def stop(self) -> None:
         if not self.recording:
@@ -125,14 +117,14 @@ class MacroRecorder:
                 json.dump(self.events, f)
             display.update_status(f"已保存: {filename}")
         except Exception as e:
-            # Try saving to the directory of the script/executable if relative path fails
+            # 如果相对路径失败，尝试保存到脚本/可执行文件的目录
             try:
                 if getattr(sys, 'frozen', False):
                     base_dir = os.path.dirname(sys.executable)
                 else:
                     base_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
-                    # If running from src, maybe go up one level? 
-                    # But let's just try the script dir first or the CWD.
+                    # 如果从 src 运行，可能需要向上一级？
+                    # 但让我们先尝试脚本目录或当前工作目录。
                 
                 abs_path = os.path.join(base_dir, os.path.basename(filename))
                 with open(abs_path, 'w') as f:
