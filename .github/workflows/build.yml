@@ -15,12 +15,12 @@ jobs:
           - os: windows-latest
             executable_name: MacroTool.exe
             asset_name: MacroTool-Windows.exe
-          - os: ubuntu-20.04
+          - os: ubuntu-latest
             executable_name: MacroTool
             asset_name: MacroTool-Linux
           - os: macos-latest
-            executable_name: MacroTool
-            asset_name: MacroTool-macOS
+            executable_name: MacroTool.app
+            asset_name: MacroTool-macOS.zip
 
     runs-on: ${{ matrix.os }}
 
@@ -48,10 +48,18 @@ jobs:
 
     - name: Build with Nuitka (macOS)
       if: runner.os == 'macOS'
-      run: python -m nuitka --standalone --onefile --output-dir=dist --output-filename=MacroTool src/main.py
+      run: python -m nuitka --standalone --macos-create-app-bundle --output-dir=dist --output-filename=MacroTool src/main.py
+
+    - name: Package macOS
+      if: runner.os == 'macOS'
+      run: |
+        cd dist
+        zip -r ${{ matrix.asset_name }} ${{ matrix.executable_name }}
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
         name: ${{ matrix.asset_name }}
-        path: dist/${{ matrix.executable_name }}
+        path: |
+          dist/${{ matrix.executable_name }}
+          dist/${{ matrix.asset_name }}

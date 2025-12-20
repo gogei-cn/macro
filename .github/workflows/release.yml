@@ -18,12 +18,12 @@ jobs:
           - os: windows-latest
             executable_name: MacroTool.exe
             asset_name: MacroTool-Windows.exe
-          - os: ubuntu-20.04
+          - os: ubuntu-latest
             executable_name: MacroTool
             asset_name: MacroTool-Linux
           - os: macos-latest
-            executable_name: MacroTool
-            asset_name: MacroTool-macOS
+            executable_name: MacroTool.app
+            asset_name: MacroTool-macOS.zip
 
     steps:
     - uses: actions/checkout@v4
@@ -49,12 +49,17 @@ jobs:
 
     - name: Build with Nuitka (macOS)
       if: runner.os == 'macOS'
-      run: python -m nuitka --standalone --onefile --output-dir=dist --output-filename=MacroTool src/main.py
+      run: python -m nuitka --standalone --macos-create-app-bundle --output-dir=dist --output-filename=MacroTool src/main.py
 
-    - name: Rename Output
+    - name: Prepare Release Asset
       shell: bash
       run: |
-        mv dist/${{ matrix.executable_name }} dist/${{ matrix.asset_name }}
+        if [ "${{ runner.os }}" == "macOS" ]; then
+          cd dist
+          zip -r ${{ matrix.asset_name }} ${{ matrix.executable_name }}
+        else
+          mv dist/${{ matrix.executable_name }} dist/${{ matrix.asset_name }}
+        fi
 
     - name: Release
       uses: softprops/action-gh-release@v2
