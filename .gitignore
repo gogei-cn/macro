@@ -10,7 +10,7 @@ dist/
 
 # Configuration & Data (Optional: keep if you want to track default config)
 # settings.json
-# macro.json
+macro.json
 
 # IDE
 .vscode/
