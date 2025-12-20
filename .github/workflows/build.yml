@@ -50,6 +50,10 @@ jobs:
             - name: Build with Nuitka
               run: |
                   python -m nuitka --standalone --assume-yes-for-downloads --output-dir=dist --output-filename=${{ matrix.executable_name }} ${{ matrix.build_args }} src/main.py
+            - name: Rename macOS App Bundle
+              if: runner.os == 'macOS'
+              run: |
+                  mv dist/main.app dist/MacroTool.app
             - name: Upload Artifact
               uses: actions/upload-artifact@v4
               with:
