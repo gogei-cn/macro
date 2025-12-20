@@ -1,59 +1,50 @@
-name: Build Macro App
+name: Build Macro Tool
 
 on:
     push:
-        branches: [main]
+        branches: ["main"]
     pull_request:
-        branches: [main]
+        branches: ["main"]
     workflow_dispatch:
 
 jobs:
     build:
-        name: Build on ${{ matrix.os }}
-        runs-on: ${{ matrix.os }}
         strategy:
-            fail-fast: false
             matrix:
                 include:
                     - os: windows-latest
-                      mode: onefile
-                      output-name: macro.exe
+                      executable_name: MacroTool.exe
+                      asset_name: MacroTool-Windows.exe
+                      icon_arg: --windows-icon-from-ico=assets/icon.ico
                     - os: ubuntu-latest
-                      mode: onefile
-                      output-name: macro.bin
+                      executable_name: MacroTool
+                      asset_name: MacroTool-Linux
+                      icon_arg: --linux-icon=assets/icon.png
                     - os: macos-latest
-                      mode: app
-                      output-name: macro.app
+                      executable_name: MacroTool
+                      asset_name: MacroTool-macOS
+                      icon_arg: --macos-app-icon=assets/icon.icns
+
+        runs-on: ${{ matrix.os }}
 
         steps:
-            - name: Check out code
-              uses: actions/checkout@v4
+            - uses: actions/checkout@v4
 
-            - name: Setup Python
+            - name: Set up Python
               uses: actions/setup-python@v5
               with:
                   python-version: "3.10"
-                  cache: "pip"
 
             - name: Install dependencies
               run: |
+                  python -m pip install --upgrade pip
                   pip install -r requirements.txt
-
+                  pip install nuitka zstandard
             - name: Build with Nuitka
-              uses: Nuitka/Nuitka-Action@main
-              with:
-                  nuitka-version: main
-                  script-name: src/main.py
-                  mode: ${{ matrix.mode }}
-                  include-data-dir: assets=assets
-                  windows-icon-from-ico: ${{ matrix.os == 'windows-latest' && 'assets/icon.ico' || '' }}
-                  linux-icon: ${{ matrix.os == 'ubuntu-latest' && 'assets/icon.png' || '' }}
-                  macos-app-icon: ${{ matrix.os == 'macos-latest' && 'assets/icon.icns' || '' }}
-                  output-file: ${{ matrix.os != 'macos-latest' && matrix.output-name || '' }}
-                  macos-app-name: ${{ matrix.os == 'macos-latest' && 'macro' || '' }}
-
-            - name: Upload Artifacts
+              run: |
+                  python -m nuitka --onefile --standalone --output-dir=dist --output-filename=${{ matrix.executable_name }} ${{ matrix.icon_arg }} src/main.py
+            - name: Upload Artifact
               uses: actions/upload-artifact@v4
               with:
-                  name: macro-${{ matrix.os }}
-                  path: build/${{ matrix.output-name }}
+                  name: ${{ matrix.asset_name }}
+                  path: dist/${{ matrix.executable_name }}
