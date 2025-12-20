@@ -22,7 +22,7 @@ jobs:
             executable_name: MacroTool
             asset_name: MacroTool-Linux
           - os: macos-latest
-            executable_name: MacroTool.app
+            executable_name: MacroTool
             asset_name: MacroTool-macOS.zip
 
     steps:
@@ -49,13 +49,16 @@ jobs:
 
     - name: Build with Nuitka (macOS)
       if: runner.os == 'macOS'
-      run: python -m nuitka --standalone --macos-create-app-bundle --output-dir=dist --output-filename=MacroTool src/main.py
+      run: python -m nuitka --standalone --onefile --output-dir=dist --output-filename=MacroTool src/main.py
 
     - name: Prepare Release Asset
       shell: bash
       run: |
         if [ "${{ runner.os }}" == "macOS" ]; then
           cd dist
+          # Make executable
+          chmod +x ${{ matrix.executable_name }}
+          # Zip the single file
           zip -r ${{ matrix.asset_name }} ${{ matrix.executable_name }}
         else
           mv dist/${{ matrix.executable_name }} dist/${{ matrix.asset_name }}

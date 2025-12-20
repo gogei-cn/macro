@@ -19,8 +19,8 @@ jobs:
             executable_name: MacroTool
             asset_name: MacroTool-Linux
           - os: macos-latest
-            executable_name: MacroTool.app
-            asset_name: MacroTool.app
+            executable_name: MacroTool
+            asset_name: MacroTool-macOS
 
     runs-on: ${{ matrix.os }}
 
@@ -48,7 +48,7 @@ jobs:
 
     - name: Build with Nuitka (macOS)
       if: runner.os == 'macOS'
-      run: python -m nuitka --standalone --macos-create-app-bundle --output-dir=dist --output-filename=MacroTool src/main.py
+      run: python -m nuitka --standalone --onefile --output-dir=dist --output-filename=MacroTool src/main.py
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
