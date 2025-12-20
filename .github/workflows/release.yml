@@ -45,7 +45,7 @@ jobs:
 
     - name: Build with Nuitka (Linux)
       if: runner.os == 'Linux'
-      run: python -m nuitka --standalone --onefile --output-dir=dist --output-filename=MacroTool --linux-icon=assets/icon.png --include-package=keyboard --include-package=mouse src/main.py
+      run: python -m nuitka --standalone --onefile --output-dir=dist --output-filename=MacroTool --linux-icon=assets/icon.png --include-package=pynput src/main.py
 
     - name: Build with Nuitka (macOS)
       if: runner.os == 'macOS'
