@@ -3,44 +3,30 @@ import os
 import time
 import platform
 
-# Linux 环境下的预检查
+# Linux 环境下的 Root 权限检查
 if platform.system() == 'Linux':
-    if not os.environ.get('DISPLAY'):
-        print("\n错误: 未检测到 DISPLAY 环境变量。")
-        print("此程序依赖于 X Server (图形界面) 来监听和控制键盘/鼠标。")
-        print("解决方案:")
-        print("1. 如果您在图形界面终端中，请尝试运行: export DISPLAY=:0")
-        print("2. 如果您通过 SSH 连接，请使用 'ssh -X' 开启 X11 转发。")
-        print("3. 如果是无头服务器，请安装并使用 Xvfb: xvfb-run python src/main.py")
+    if os.geteuid() != 0:
+        print("\n错误: 权限不足。")
+        print("在 Linux 上，此程序需要 Root 权限才能访问输入设备 (/dev/input/)。")
+        print("请尝试使用 sudo 运行: sudo python src/main.py")
         sys.exit(1)
 
 try:
-    from pynput import keyboard
+    import keyboard
+    import mouse
 except ImportError as e:
-    print("\n错误: 无法加载输入控制模块 (pynput)。")
-    if platform.system() == 'Linux':
-        print("在 Linux 系统上，此程序需要 X Server 图形环境。")
-        print("如果您在纯命令行或 SSH 环境中运行，请确保已设置 DISPLAY 环境变量 (例如: export DISPLAY=:0)。")
-        print("如果是无头服务器，您可能需要安装 Xvfb。")
+    print("\n错误: 无法加载输入控制模块 (keyboard/mouse)。")
     print(f"详细错误信息: {e}\n")
     sys.exit(1)
 
-# Handle imports whether running as a package or a script
-if __package__:
-    from .settings import settings
-    from .utils import Colors, setup_dpi_awareness
-    from .recorder import MacroRecorder
-    from .player import MacroPlayer
-    from .display import display
-else:
-    # Add the current directory to sys.path to ensure imports work
-    sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+# Add the current directory to sys.path to ensure imports work
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-    from settings import settings
-    from utils import Colors, setup_dpi_awareness
-    from recorder import MacroRecorder
-    from player import MacroPlayer
-    from display import display
+from settings import settings
+from utils import Colors, setup_dpi_awareness
+from recorder import MacroRecorder
+from player import MacroPlayer
+from display import display
 
 class MacroApp:
     def __init__(self):
@@ -87,8 +73,9 @@ class MacroApp:
             display.update_speed(self.player.speed)
             self.last_speed_change = current_time
 
-    def on_press(self, key):
+    def on_press(self, event):
         try:
+            key = event.name.lower()
             if key == settings.get_key('record'):
                 self.handle_record_toggle()
             elif key == settings.get_key('play'):
@@ -105,8 +92,15 @@ class MacroApp:
         display.set_hotkeys(settings.config['hotkeys'])
         display.render()
         
-        with keyboard.Listener(on_press=self.on_press) as listener:
-            listener.join()
+        # Register the callback
+        keyboard.on_press(self.on_press)
+        
+        # Keep the main thread alive
+        try:
+            while True:
+                time.sleep(0.1)
+        except KeyboardInterrupt:
+            pass
 
 def main():
     app = MacroApp()

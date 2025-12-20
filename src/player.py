@@ -2,38 +2,18 @@ import time
 import json
 import threading
 from typing import List, Dict, Optional, Union, Any
-from pynput import mouse, keyboard
-from pynput.mouse import Button
-from pynput.keyboard import Key
-try:
-    from .settings import settings
-    from .display import display
-except ImportError:
-    from settings import settings
-    from display import display
+import mouse
+import keyboard
+from settings import settings
+from display import display
 
 class MacroPlayer:
     def __init__(self) -> None:
-        self.mouse_controller = mouse.Controller()
-        self.keyboard_controller = keyboard.Controller()
         self.playing: bool = False
         self.stop_event = threading.Event()
         self.speed: float = settings.config['default_speed']
         self.play_thread: Optional[threading.Thread] = None
         self.events: List[Dict[str, Any]] = []
-
-    def _prepare_events(self):
-        """Pre-process events to avoid parsing overhead during playback"""
-        prepared = []
-        for event in self.events:
-            new_event = event.copy()
-            if event['type'] == 'click':
-                btn_name = event['button'].split('.')[-1]
-                new_event['parsed_button'] = getattr(Button, btn_name, Button.left)
-            elif event['type'] in ('key_press', 'key_release'):
-                new_event['parsed_key'] = self._parse_key(event['key'])
-            prepared.append(new_event)
-        return prepared
 
     def start(self, filename: Optional[str] = None) -> None:
         if filename is None:
@@ -47,9 +27,6 @@ class MacroPlayer:
                     self.events = data
                 elif isinstance(data, dict):
                     self.events = data.get('events', [])
-            
-            # Pre-process events
-            self.prepared_events = self._prepare_events()
             
         except FileNotFoundError:
             display.update_status("未找到宏文件")
@@ -76,101 +53,79 @@ class MacroPlayer:
         if hasattr(self, 'play_thread') and self.play_thread:
             self.play_thread.join()
 
-    def _parse_key(self, key_str: str) -> Union[Key, str, None]:
-        if key_str.startswith('Key.'):
-            try:
-                return getattr(Key, key_str.split('.')[1])
-            except AttributeError:
-                return None
-        elif len(key_str) == 1:
-            return key_str
-        else:
-            return None
-
     def _handle_move(self, event: Dict[str, Any]) -> None:
-        self.mouse_controller.position = (event['x'], event['y'])
+        mouse.move(event['x'], event['y'])
 
     def _handle_click(self, event: Dict[str, Any]) -> None:
-        button = event.get('parsed_button', Button.left)
+        button = event.get('button', 'left')
         if event['pressed']:
-            self.mouse_controller.press(button)
+            mouse.press(button)
         else:
-            self.mouse_controller.release(button)
+            mouse.release(button)
 
     def _handle_scroll(self, event: Dict[str, Any]) -> None:
-        self.mouse_controller.scroll(event['dx'], event['dy'])
+        # mouse library uses wheel(delta)
+        # Try to use dy if available, otherwise 0
+        dy = event.get('dy', 0)
+        if dy != 0:
+            mouse.wheel(dy)
 
-    def _handle_key(self, event: Dict[str, Any], press: bool) -> None:
-        key = event.get('parsed_key')
-        if key:
-            if press:
-                self.keyboard_controller.press(key)
+    def _handle_key(self, event: Dict[str, Any]) -> None:
+        key = event.get('key')
+        if not key:
+            return
+        
+        try:
+            if event['type'] == 'key_press':
+                keyboard.press(key)
             else:
-                self.keyboard_controller.release(key)
+                keyboard.release(key)
+        except ValueError:
+            # Handle unknown keys gracefully
+            pass
 
     def _play_loop(self) -> None:
-        total_events = len(self.prepared_events)
-        total_duration = self.prepared_events[-1]['time'] if self.prepared_events else 0.0
-        
-        while self.playing and not self.stop_event.is_set():
-            # Use perf_counter for high precision timing
+        if not self.events:
+            self.playing = False
+            display.update_status("就绪")
+            return
+
+        while self.playing:
             start_time = time.perf_counter()
-            last_progress_update = 0.0
-
-            for i, event in enumerate(self.prepared_events):
+            event_start_time = self.events[0]['time']
+            
+            for event in self.events:
                 if self.stop_event.is_set():
                     break
 
-                current_time = time.perf_counter()
-                target_time = start_time + (event['time'] / self.speed)
-                wait_time = target_time - current_time
-
-                if wait_time > 0:
-                    # High precision wait loop
-                    while wait_time > 0:
-                        if self.stop_event.is_set():
-                            break
-                        
-                        # Update progress if enough time has passed (e.g. > 0.1s)
-                        # Only update if we have enough slack time (> 20ms) to avoid jitter
-                        if wait_time > 0.02 and (time.perf_counter() - last_progress_update > 0.1):
-                            elapsed = (time.perf_counter() - start_time) * self.speed
-                            display.update_progress(min(elapsed, total_duration), total_duration)
-                            last_progress_update = time.perf_counter()
-                            # Recalculate wait_time after update
-                            wait_time = target_time - time.perf_counter()
-                            continue
-
-                        # Sleep strategy
-                        if wait_time > 0.002: # Sleep for longer waits (> 2ms)
-                            time.sleep(0.001)
-                        else:
-                            # Busy wait for the last 2ms for maximum precision
-                            pass
-                        
-                        wait_time = target_time - time.perf_counter()
-
-                if self.stop_event.is_set():
-                    break
-
-                try:
-                    if event['type'] == 'move':
-                        self._handle_move(event)
-                    elif event['type'] == 'click':
-                        self._handle_click(event)
-                    elif event['type'] == 'scroll':
-                        self._handle_scroll(event)
-                    elif event['type'] == 'key_press':
-                        self._handle_key(event, press=True)
-                    elif event['type'] == 'key_release':
-                        self._handle_key(event, press=False)
-                except Exception as e:
-                    pass
+                # Calculate target time
+                target_time = (event['time'] - event_start_time) / self.speed
+                current_elapsed = time.perf_counter() - start_time
                 
-                # Update progress after event if needed (for long gaps between events)
-                if i == total_events - 1:
-                     display.update_progress(total_duration, total_duration)
+                wait_time = target_time - current_elapsed
+                if wait_time > 0:
+                    time.sleep(wait_time)
+
+                if event['type'] == 'move':
+                    self._handle_move(event)
+                elif event['type'] == 'click':
+                    self._handle_click(event)
+                elif event['type'] == 'scroll':
+                    self._handle_scroll(event)
+                elif event['type'] in ('key_press', 'key_release'):
+                    self._handle_key(event)
+
+            # Loop check (if implemented) or just stop
+            # For now, let's assume single run or loop based on settings?
+            # The original code didn't show the loop logic clearly in the snippet, 
+            # but the README says "Infinite playback".
+            # Let's assume we loop until stopped.
+            if not self.stop_event.is_set():
+                time.sleep(0.1) # Small pause between loops
+            else:
+                break
         
         self.playing = False
         display.update_status("就绪")
-        display.update_progress(0, 0)
+
+

@@ -1,6 +1,4 @@
 import json
-from pynput import keyboard
-from pynput.keyboard import Key
 
 class Settings:
     def __init__(self, filename='settings.json'):
@@ -9,8 +7,8 @@ class Settings:
             "hotkeys": {
                 "record": "f8",
                 "play": "f9",
-                "speed_up": "page_up",
-                "speed_down": "page_down"
+                "speed_up": "page up",
+                "speed_down": "page down"
             },
             "default_speed": 1.0,
             "macro_filename": "macro.json",
@@ -50,13 +48,7 @@ class Settings:
         key_str = self.config['hotkeys'].get(action)
         if not key_str:
             return None
-
-        try:
-            return getattr(Key, key_str.lower())
-        except AttributeError:
-            try:
-                return keyboard.KeyCode.from_char(key_str)
-            except:
-                return None
+        # Normalize for keyboard library (e.g. page_up -> page up)
+        return key_str.replace('_', ' ').lower()
 
 settings = Settings()

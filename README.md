@@ -28,17 +28,15 @@
 
 ### 1. 安装依赖
 
-本项目依赖 `pynput` 库。请确保安装了 Python 3.x，并安装必要的依赖库：
+本项目依赖 `keyboard` 和 `mouse` 库。请确保安装了 Python 3.x，并安装必要的依赖库：
 
 ```bash
 pip install -r requirements.txt
 ```
 
-**Linux 用户注意**:
-
-1. 可能需要安装额外的系统库（如 `python3-tk`, `python3-dev` 或 `xlib`），具体取决于您的发行版。
-
-2. 如果遇到 `externally-managed-environment` 错误（常见于 Kali/Debian 12+），请使用虚拟环境：
+> **Linux 用户注意**: 
+> 1. 本程序在 Linux 上需要 **Root 权限** 才能访问输入设备。
+> 2. 如果遇到 `externally-managed-environment` 错误（常见于 Kali/Debian 12+），请使用虚拟环境：
 
 ```bash
 python3 -m venv venv
@@ -51,7 +49,13 @@ pip install -r requirements.txt
 在项目根目录下运行：
 
 ```bash
-python -m src.main
+# Windows
+python src/main.py
+
+# Linux (需要 Root 权限)
+sudo python src/main.py
+# 如果使用了虚拟环境，请使用虚拟环境中的 python:
+sudo ./venv/bin/python src/main.py
 ```
 
 ### 3. 使用热键控制
