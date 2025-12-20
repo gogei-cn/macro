@@ -48,7 +48,7 @@ jobs:
 
     - name: Build with Nuitka (macOS)
       if: runner.os == 'macOS'
-      run: python -m nuitka --standalone --onefile --output-dir=dist --output-filename=MacroTool src/main.py
+      run: python -m nuitka --standalone --onefile --output-dir=dist --output-filename=MacroTool --user-package-configuration-file=nuitka-config.yml src/main.py
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
