@@ -49,12 +49,11 @@ jobs:
                   windows-icon-from-ico: ${{ matrix.os == 'windows-latest' && 'assets/icon.ico' || '' }}
                   linux-icon: ${{ matrix.os == 'ubuntu-latest' && 'assets/icon.png' || '' }}
                   macos-app-icon: ${{ matrix.os == 'macos-latest' && 'assets/icon.icns' || '' }}
-                  output-file: ${{ matrix.output-name }}
+                  output-file: ${{ matrix.os != 'macos-latest' && matrix.output-name || '' }}
+                  macos-app-name: ${{ matrix.os == 'macos-latest' && 'macro' || '' }}
 
             - name: Upload Artifacts
               uses: actions/upload-artifact@v4
               with:
                   name: macro-${{ matrix.os }}
-                  path: |
-                      ${{ matrix.output-name }}
-                      build/${{ matrix.output-name }}
+                  path: build/${{ matrix.output-name }}
