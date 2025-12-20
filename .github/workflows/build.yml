@@ -8,55 +8,53 @@ on:
     workflow_dispatch:
 
 jobs:
-  build:
-    name: Build on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - os: windows-latest
-            mode: onefile
-            icon-arg: --windows-icon-from-ico=assets/icon.ico
-            output-name: macro.exe
-          - os: ubuntu-latest
-            mode: onefile
-            icon-arg: --linux-icon=assets/icon.png
-            output-name: macro.bin
-          - os: macos-latest
-            mode: app
-            icon-arg: --macos-app-icon=assets/icon.icns
-            output-name: macro.app
+    build:
+        name: Build on ${{ matrix.os }}
+        runs-on: ${{ matrix.os }}
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    - os: windows-latest
+                      mode: onefile
+                      output-name: macro.exe
+                    - os: ubuntu-latest
+                      mode: onefile
+                      output-name: macro.bin
+                    - os: macos-latest
+                      mode: app
+                      output-name: macro.app
 
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v4
+        steps:
+            - name: Check out code
+              uses: actions/checkout@v4
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.10'
-          cache: 'pip'
+            - name: Setup Python
+              uses: actions/setup-python@v5
+              with:
+                  python-version: "3.10"
+                  cache: "pip"
 
-      - name: Install dependencies
-        run: |
-          pip install -r requirements.txt
+            - name: Install dependencies
+              run: |
+                  pip install -r requirements.txt
 
-      - name: Build with Nuitka
-        uses: Nuitka/Nuitka-Action@main
-        with:
-          nuitka-version: main
-          script-name: src/main.py
-          mode: ${{ matrix.mode }}
-          include-data-dir: assets=assets
-          extra-args: |
-            ${{ matrix.icon-arg }}
-            --output-filename=${{ matrix.output-name }}
+            - name: Build with Nuitka
+              uses: Nuitka/Nuitka-Action@main
+              with:
+                  nuitka-version: main
+                  script-name: src/main.py
+                  mode: ${{ matrix.mode }}
+                  include-data-dir: assets=assets
+                  windows-icon-from-ico: ${{ matrix.os == 'windows-latest' && 'assets/icon.ico' || '' }}
+                  linux-icon: ${{ matrix.os == 'ubuntu-latest' && 'assets/icon.png' || '' }}
+                  macos-app-icon: ${{ matrix.os == 'macos-latest' && 'assets/icon.icns' || '' }}
+                  output-file: ${{ matrix.output-name }}
 
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: macro-${{ matrix.os }}
-          path: |
-            ${{ matrix.output-name }}
-            build/${{ matrix.output-name }}
+            - name: Upload Artifacts
+              uses: actions/upload-artifact@v4
+              with:
+                  name: macro-${{ matrix.os }}
+                  path: |
+                      ${{ matrix.output-name }}
+                      build/${{ matrix.output-name }}
