@@ -1,6 +1,0 @@
-- module-name: 'Foundation'
-  options:
-    checks:
-      - description: "Override Foundation bundle requirement"
-        macos_bundle: 'no'
-        when: 'macos'
