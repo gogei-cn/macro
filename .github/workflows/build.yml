@@ -17,15 +17,15 @@ jobs:
             matrix:
                 include:
                     - os: windows-latest
-                      executable_name: MacroTool.exe
+                      executable_name: MacroTool-Windows.exe
                       asset_name: MacroTool-Windows.exe
                       build_args: --onefile --windows-icon-from-ico=assets/icon.ico
-                      artifact_path: dist/MacroTool.exe
+                      artifact_path: dist/MacroTool-Windows.exe
                     - os: ubuntu-latest
-                      executable_name: MacroTool
+                      executable_name: MacroTool-Linux
                       asset_name: MacroTool-Linux
                       build_args: --onefile --linux-icon=assets/icon.png
-                      artifact_path: dist/MacroTool
+                      artifact_path: dist/MacroTool-Linux
                     - os: macos-latest
                       executable_name: MacroTool
                       asset_name: MacroTool-macOS.zip
