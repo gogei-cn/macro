@@ -90,6 +90,9 @@ class MacroPlayer:
             display.update_status("就绪")
             return
 
+        total_duration = self.events[-1]['time'] if self.events else 0.0
+        last_progress_update = 0.0
+
         while self.playing:
             start_time = time.perf_counter()
             event_start_time = self.events[0]['time']
@@ -102,6 +105,11 @@ class MacroPlayer:
                 target_time = (event['time'] - event_start_time) / self.speed
                 current_elapsed = time.perf_counter() - start_time
                 
+                # Update progress periodically (every 0.1s)
+                if time.perf_counter() - last_progress_update > 0.1:
+                    display.update_progress(min(current_elapsed * self.speed, total_duration), total_duration)
+                    last_progress_update = time.perf_counter()
+
                 wait_time = target_time - current_elapsed
                 if wait_time > 0:
                     time.sleep(wait_time)
@@ -114,12 +122,11 @@ class MacroPlayer:
                     self._handle_scroll(event)
                 elif event['type'] in ('key_press', 'key_release'):
                     self._handle_key(event)
+            
+            # Update progress to 100% at the end of loop
+            display.update_progress(total_duration, total_duration)
 
-            # Loop check (if implemented) or just stop
-            # For now, let's assume single run or loop based on settings?
-            # The original code didn't show the loop logic clearly in the snippet, 
-            # but the README says "Infinite playback".
-            # Let's assume we loop until stopped.
+            # Loop check
             if not self.stop_event.is_set():
                 time.sleep(0.1) # Small pause between loops
             else:
@@ -127,5 +134,6 @@ class MacroPlayer:
         
         self.playing = False
         display.update_status("就绪")
+        display.update_progress(0, 0)
 
 
