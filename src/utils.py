@@ -1,6 +1,7 @@
 import ctypes
 import os
 import platform
+from ctypes import wintypes
 
 if platform.system() == 'Windows':
     os.system('')
@@ -47,3 +48,18 @@ def setup_dpi_awareness():
                 ctypes.windll.user32.SetProcessDPIAware()
             except Exception:
                 pass
+
+
+def enable_vt_mode():
+    # 启用 Windows 控制台的 ANSI/VT 支持，避免转义序列无效导致无法清屏
+    if platform.system() != 'Windows':
+        return
+    try:
+        kernel32 = ctypes.windll.kernel32
+        handle = kernel32.GetStdHandle(-11)  # STD_OUTPUT_HANDLE
+        mode = wintypes.DWORD()
+        if kernel32.GetConsoleMode(handle, ctypes.byref(mode)):
+            new_mode = mode.value | 0x0004  # ENABLE_VIRTUAL_TERMINAL_PROCESSING
+            kernel32.SetConsoleMode(handle, new_mode)
+    except Exception:
+        pass

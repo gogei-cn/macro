@@ -11,10 +11,11 @@ from settings import settings
 import pynput
 from pynput import keyboard as pynput_keyboard
 
-from utils import Colors, setup_dpi_awareness
+from utils import Colors, setup_dpi_awareness, enable_vt_mode
 from recorder import MacroRecorder
 from player import MacroPlayer
 from display import display
+from i18n import t, list_languages
 
 class MacroApp:
     def __init__(self):
@@ -27,6 +28,7 @@ class MacroApp:
 
     def setup_environment(self):
         setup_dpi_awareness()
+        enable_vt_mode()
         # 启动时清空屏幕并隐藏光标
         sys.stdout.write("\033[2J\033[H\033[?25l")
         sys.stdout.flush()
@@ -59,7 +61,7 @@ class MacroApp:
             self.recorder.stop()
         else:
             if self.player.playing:
-                display.update_status("正在回放中，请先停止回放。")
+                display.update_status(t('prompt.stop_play_first'))
             else:
                 self.recorder.start()
 
@@ -68,7 +70,7 @@ class MacroApp:
             self.player.stop()
         else:
             if self.recorder.recording:
-                display.update_status("正在录制中，请先停止录制。")
+                display.update_status(t('prompt.stop_record_first'))
             else:
                 self.player.start()
 
@@ -84,6 +86,7 @@ class MacroApp:
             self.player.speed = max(0.1, new_speed)
             display.update_speed(self.player.speed)
             self.last_speed_change = current_time
+
 
     def on_press(self, key):
         try:
@@ -124,6 +127,18 @@ class MacroApp:
                 pass
 
 def main():
+    # 首次运行（无 settings.json）时提供语言提示
+    if getattr(settings, 'first_run', False):
+        try:
+            langs = list_languages()
+            hint = "/".join(langs)
+            choice = input(f"首次运行：请选择语言 ({hint})，直接回车默认 zh: ").strip().lower()
+            if choice in langs:
+                settings.config['language'] = choice
+            settings.save()
+        except Exception:
+            pass
+
     app = None
     try:
         app = MacroApp()
@@ -131,7 +146,7 @@ def main():
     except Exception:
         import traceback
         traceback.print_exc()
-        input("\n程序发生严重错误，按回车键退出...")
+        input(f"\n{t('fatal_error_prompt')}")
     finally:
         if app:
             app.cleanup()

@@ -10,6 +10,7 @@ from pynput.keyboard import Key
 
 from settings import settings
 from display import display
+from i18n import t
 
 class MacroPlayer:
     def __init__(self) -> None:
@@ -35,16 +36,16 @@ class MacroPlayer:
                     self.events = data.get('events', [])
             
         except FileNotFoundError:
-            display.update_status("未找到宏文件")
+            display.update_status(t('error.macro_missing'))
             return
         except json.JSONDecodeError:
-            display.update_status("宏文件格式错误")
+            display.update_status(t('error.macro_invalid'))
             return
 
         self.playing = True
         self.stop_event.clear()
         
-        display.update_status("正在回放")
+        display.update_status(t('status.playing'))
         display.update_speed(self.speed)
 
         self.play_thread = threading.Thread(target=self._play_loop)
@@ -55,7 +56,7 @@ class MacroPlayer:
             return
         self.playing = False
         self.stop_event.set()
-        display.update_status("正在停止")
+        display.update_status(t('status.stopping'))
         if hasattr(self, 'play_thread') and self.play_thread:
             self.play_thread.join()
 
@@ -90,7 +91,7 @@ class MacroPlayer:
     def _play_loop(self) -> None:
         if not self.events:
             self.playing = False
-            display.update_status("就绪")
+            display.update_status(t('status.ready'))
             return
 
         total_duration = self.events[-1]['time'] if self.events else 0.0
@@ -127,7 +128,7 @@ class MacroPlayer:
                     elif event['type'] in ('key_press', 'key_release'):
                         self._handle_key(event)
                 except Exception as e:
-                    print(f"Playback error: {e}")
+                    print(t('error.playback', error=e))
             
             # 循环结束时更新进度到 100%
             display.update_progress(total_duration, total_duration)
@@ -139,7 +140,7 @@ class MacroPlayer:
                 break
         
         self.playing = False
-        display.update_status("就绪")
+        display.update_status(t('status.ready'))
         display.update_progress(0, 0)
 
 

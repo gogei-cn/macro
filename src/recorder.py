@@ -9,6 +9,7 @@ from pynput import keyboard as pynput_keyboard
 
 from settings import settings
 from display import display
+from i18n import t
 
 class MacroRecorder:
     def __init__(self) -> None:
@@ -79,7 +80,7 @@ class MacroRecorder:
         self.last_record_time = self.start_time
         
         self.stop_key = settings.get_key('record')
-        display.update_status("正在录制")
+        display.update_status(t('status.recording'))
 
         self.pynput_mouse_listener = pynput_mouse.Listener(
             on_move=self._pynput_on_move,
@@ -104,9 +105,9 @@ class MacroRecorder:
             self.pynput_keyboard_listener.stop()
             self.pynput_keyboard_listener = None
             
-        display.update_status("正在保存")
+        display.update_status(t('status.saving'))
         self.save()
-        display.update_status("就绪")
+        display.update_status(t('status.ready'))
 
     def save(self, filename: Optional[str] = None) -> None:
         if filename is None:
@@ -115,7 +116,7 @@ class MacroRecorder:
         try:
             with open(filename, 'w') as f:
                 json.dump(self.events, f)
-            display.update_status(f"已保存: {filename}")
+            display.update_status(t('status.saved', filename=filename))
         except Exception as e:
             # 如果相对路径失败，尝试保存到脚本/可执行文件的目录
             try:
@@ -129,7 +130,7 @@ class MacroRecorder:
                 abs_path = os.path.join(base_dir, os.path.basename(filename))
                 with open(abs_path, 'w') as f:
                     json.dump(self.events, f)
-                display.update_status(f"已保存: {os.path.basename(abs_path)}")
+                display.update_status(t('status.saved', filename=os.path.basename(abs_path)))
             except Exception as e2:
-                display.update_status(f"保存失败: {e}")
-                print(f"\n保存失败详细信息: {e}")
+                display.update_status(t('status.save_failed', error=e))
+                print(f"\n{t('status.save_failed_detail', error=e)}")

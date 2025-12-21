@@ -3,6 +3,7 @@ import json
 class Settings:
     def __init__(self, filename='settings.json'):
         self.filename = filename
+        self.first_run = False
         self.config = {
             "hotkeys": {
                 "record": "f8",
@@ -13,6 +14,7 @@ class Settings:
             "default_speed": 1.0,
             "macro_filename": "macro.json",
             "sample_rate": 0.016,
+            "language": "zh",
             "theme": {
                 "title": "BRIGHT_MAGENTA",
                 "border": "BRIGHT_BLACK",
@@ -33,10 +35,11 @@ class Settings:
                     self.config['hotkeys'].update(data['hotkeys'])
                 if 'theme' in data:
                     self.config['theme'].update(data['theme'])
-                for key in ['default_speed', 'macro_filename', 'sample_rate']:
+                for key in ['default_speed', 'macro_filename', 'sample_rate', 'language']:
                     if key in data:
                         self.config[key] = data[key]
         except FileNotFoundError:
+            self.first_run = True
             print(f"未找到配置文件 {self.filename}，生成默认配置。")
             self.save()
 

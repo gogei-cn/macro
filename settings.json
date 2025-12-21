@@ -2,12 +2,13 @@
     "hotkeys": {
         "record": "f8",
         "play": "f9",
-        "speed_up": "page_up",
-        "speed_down": "page_down"
+        "speed_up": "page up",
+        "speed_down": "page down"
     },
     "default_speed": 1.0,
     "macro_filename": "macro.json",
     "sample_rate": 0.016,
+    "language": "zh",
     "theme": {
         "title": "BRIGHT_MAGENTA",
         "border": "BRIGHT_BLACK",
