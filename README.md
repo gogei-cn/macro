@@ -1,106 +1,171 @@
 # 全能宏工具 (Macro Tool)
 
-这是一个基于 Python 的轻量级宏录制与回放工具。它可以精确记录您的**鼠标**移动、点击、滚动以及**键盘**按键操作，并支持以不同的速度无限循环回放。非常适合重复性的任务或自动化测试。
+Macro Tool - lightweight Python macro recorder/player.
 
-## 主要功能
+基于 Python 的轻量级宏录制与回放工具，支持鼠标轨迹/点击/滚轮和键盘按键的录制、变速回放与循环。
 
--   **全能录制**: 同时捕获鼠标（轨迹/点击/滚轮）和键盘按键操作。
--   **无限回放**: 支持循环播放录制的宏，直到手动停止。
--   **速度控制**: 支持实时调整回放速度（加速/减速）。
--   **彩色界面**: 终端输出支持 ANSI 彩色显示，状态一目了然。
--   **热键控制**: 全局热键操作，无需切换窗口即可控制录制和回放。
--   **自定义主题**: 支持自定义界面各个部分的颜色。
--   **配置持久化**: 支持通过 `settings.json` 自定义热键和默认设置。
--   **DPI 感知**: 自动处理 Windows 高 DPI 缩放，防止坐标偏移。
+Records mouse move/click/scroll and keyboard keys, with variable-speed looping playback.
 
-## 下载与运行
+## 主要功能 / Features
 
-无需安装 Python 环境，您可以直接从 [Releases](../../releases) 页面下载对应系统的可执行文件：
+-   全能录制：鼠标轨迹/点击/滚轮 + 键盘按键。
 
--   **Windows**: 下载 `MacroTool-Windows.exe`，双击运行。
--   **Linux**: 下载 `MacroTool-Linux`，在终端运行。
--   **macOS**: 下载 `MacroTool-macOS`，在终端运行。
+    Record mouse path/click/scroll plus keyboard keys.
 
-首次运行会自动生成 `settings.json` 配置文件。参照下方的热键说明进行操作。
+-   回放循环：可循环回放，手动停止即可结束。
 
-如果无法运行可执行文件，请使用源码方式运行，具体步骤见下文。
+    Loop playback until you stop it.
 
-## 源码运行
+-   速度控制：实时加速/减速，最低 0.1x。
 
-### 1. 安装依赖
+    Live speed control (min 0.1x).
 
-本项目依赖 `pynput` 库。请确保安装了 Python 3.x。
+-   彩色界面：ANSI 彩色状态显示。
+
+    ANSI-colored terminal UI.
+
+-   热键控制：全局热键，无需切窗。
+
+    Global hotkeys without switching windows.
+
+-   自定义主题：界面颜色可配置。
+
+    Customizable theme colors.
+
+-   配置持久化：`settings.json` 自定义热键和默认值。
+
+    Persistent settings via `settings.json`.
+
+-   多语言：首启可选语言，语言位于 `lang/`（zh, en, es, fr, ja, ko, zh-TW, ru）。
+
+    Multi-language via `lang/` files (zh, en, es, fr, ja, ko, zh-TW, ru).
+
+-   DPI 感知：适配 Windows 高 DPI。
+
+    DPI awareness on Windows.
+
+## 下载与运行 / Binaries
+
+可从 [Releases](../../releases) 获取可执行文件。
+
+Grab executables from [Releases](../../releases).
+
+-   Windows: `MacroTool-Windows.exe`
+-   Linux: `MacroTool-Linux`
+-   macOS: `MacroTool-macOS`
+
+首次运行若无 `settings.json` 将提示选择语言。
+
+On first run (no `settings.json`), you will be prompted to choose a language.
+
+## 源码运行 / Run from Source
+
+0. 你需要一个 Python 3.x 环境。 / You need a Python 3.x environment.
+
+1. 安装依赖 / Install dependencies:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 2. 运行脚本
-
-在项目根目录下运行：
+2. 运行主程序 / Run the app:
 
 ```bash
 python src/main.py
 ```
 
-### 3. 使用热键控制
+3. 默认热键 / Default hotkeys：
 
-使用以下默认热键进行控制：
+-   开始/停止录制：F8
 
-| 功能               | 默认热键    | 说明                                            |
-| :----------------- | :---------- | :---------------------------------------------- |
-| **开始/停止 录制** | `F8`        | 开始新的录制（鼠标+键盘），再次按下停止并保存。 |
-| **开始/停止 回放** | `F9`        | 开始回放当前宏，再次按下停止。                  |
-| **增加速度**       | `Page Up`   | 每次增加 0.5x 播放速度。                        |
-| **减少速度**       | `Page Down` | 每次减少 0.5x 播放速度 (最低 0.1x)。            |
+    Start/Stop Record: F8
 
-## 配置文件 (settings.json)
+-   开始/停止回放：F9
 
-程序首次运行会自动生成 `settings.json`，您可以修改此文件来自定义热键：
+    Start/Stop Play: F9
+
+-   增加速度：Page Up（+0.5x）
+
+    Speed Up: Page Up (+0.5x)
+
+-   减少速度：Page Down（-0.5x，最低 0.1x）
+
+    Slow Down: Page Down (-0.5x, min 0.1x)
+
+## 配置文件 / settings.json
+
+首次运行自动生成，可手动修改。
+
+Auto-created on first run; you can edit it.
 
 ```json
 {
     "hotkeys": {
         "record": "f8",
         "play": "f9",
-        "speed_up": "page_up",
-        "speed_down": "page_down"
+        "speed_up": "page up",
+        "speed_down": "page down"
     },
     "default_speed": 1.0,
     "macro_filename": "macro.json",
     "sample_rate": 0.016,
+    "language": "zh",
     "theme": {
-        "title": "HEADER",
-        "border": "HEADER",
-        "label": "BOLD",
-        "status_recording": "GREEN",
-        "status_playing": "CYAN",
-        "progress_bar": "BLUE",
-        "guide_title": "BOLD"
+        "title": "BRIGHT_MAGENTA",
+        "border": "BRIGHT_BLACK",
+        "label": "CYAN",
+        "status_recording": "BRIGHT_RED",
+        "status_playing": "BRIGHT_GREEN",
+        "progress_bar": "BRIGHT_GREEN",
+        "guide_title": "BRIGHT_YELLOW"
     }
 }
 ```
 
-解释：
+字段说明：
 
--   `record`: 录制热键。
--   `play`: 回放热键。
--   `speed_up`: 增加速度热键。
--   `speed_down`: 减少速度热键。
--   `default_speed`: 默认回放速度倍数。
--   `macro_filename`: 录制文件的保存文件。
--   `sample_rate`: 录制采样间隔（秒），越小越精确但文件越大。默认 0.016 (约 60Hz)。
--   `theme`: 界面颜色主题配置。
-    -   可用标准颜色: `BLACK`, `RED`, `GREEN`, `YELLOW`, `BLUE`, `MAGENTA`, `CYAN`, `WHITE`
-    -   可用高亮颜色: `BRIGHT_BLACK`, `BRIGHT_RED`, `BRIGHT_GREEN`, `BRIGHT_YELLOW`, `BRIGHT_BLUE`, `BRIGHT_MAGENTA`, `BRIGHT_CYAN`, `BRIGHT_WHITE`
-    -   其他: `BOLD`, `ENDC`, `HEADER`
+Field notes:
 
-## 注意事项
+-   `hotkeys.*`: 录制/回放/加速/减速热键。
 
--   **录制文件**: 录制的数据默认保存在 `macro.json` 中。
--   **停止回放**: 回放过程中，鼠标可能会被程序控制。如果需要停止，请直接按下停止热键 (`F9`)。
--   **管理员权限**: 在某些游戏或高权限应用中使用时，可能需要以管理员身份运行终端。
+    `hotkeys.*`: record/play/speed up/speed down hotkeys.
 
-## 作者
+-   `default_speed`: 默认回放倍速。
 
-Designed by [gogei](https://gogei.netlify.app/about/)
+    `default_speed`: default playback speed multiplier.
+
+-   `macro_filename`: 宏文件保存名。
+
+    `macro_filename`: macro file name.
+
+-   `sample_rate`: 录制采样间隔（秒），默认 0.016（约 60Hz）。
+
+    `sample_rate`: record interval in seconds (default 0.016 ~60Hz).
+
+-   `language`: 语言代码（zh/en/es/fr/ja/ko/zh-TW/ru）。
+
+    `language`: language code (zh/en/es/fr/ja/ko/zh-TW/ru).
+
+-   `theme`: 终端颜色主题，可用 `BRIGHT_*` / 基础色 / `BOLD` / `ENDC`。
+
+    `theme`: terminal colors (`BRIGHT_*`, base colors, `BOLD`, `ENDC`).
+
+## 注意事项 / Notes
+
+-   录制数据默认保存在 `macro.json`。
+
+    Recorded data defaults to `macro.json`.
+
+-   回放时鼠标可能被接管，需停止请按回放热键。
+
+    During playback the mouse may be controlled; stop with the playback hotkey.
+
+-   某些高权限场景可能需要以管理员身份运行终端。
+
+    Some high-privilege contexts may require running the terminal as admin.
+
+## 作者 / Author
+
+作者: gogei (https://gogei.netlify.app/)
+
+Author: gogei (https://gogei.netlify.app/)
