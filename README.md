@@ -1,102 +1,77 @@
+<div align="center">
+  <img src="assets/icon.png" alt="Logo" width="120" height="120" />
+
 # 全能宏工具 (Macro Tool)
 
-Macro Tool - lightweight Python macro recorder/player.
+**基于 Python 的轻量级宏录制与回放工具**
 
-基于 Python 的轻量级宏录制与回放工具，支持鼠标轨迹/点击/滚轮和键盘按键的录制、变速回放与循环。
+支持鼠标轨迹/点击/滚轮和键盘按键的录制、变速回放与循环。
 
-Records mouse move/click/scroll and keyboard keys, with variable-speed looping playback.
+[中文版](README.md) | [English](README_EN.md)
 
-## 主要功能 / Features
+[![Python](https://img.shields.io/badge/Python-3.x-blue.svg)](https://www.python.org/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey.svg)]()
 
--   全能录制：鼠标轨迹/点击/滚轮 + 键盘按键。
+  <br/>
+  
+  ![Demo](assets/demo.gif)
+</div>
 
-    Record mouse path/click/scroll plus keyboard keys.
+## ✨ 主要功能
 
--   回放循环：可循环回放，手动停止即可结束。
+| 功能              | 说明                                              |
+| :---------------- | :------------------------------------------------ |
+| 🖱️ **全能录制**   | 支持鼠标轨迹、点击、滚轮以及键盘按键的完整录制。  |
+| 🔄 **回放循环**   | 支持无限循环回放，随时手动停止。                  |
+| ⏩ **速度控制**   | 实时加速/减速回放，最低支持 0.1x 倍速。           |
+| 🎨 **彩色界面**   | 基于 ANSI 的彩色终端界面，状态一目了然。          |
+| ⌨️ **热键控制**   | 全局热键支持，无需切换窗口即可控制。              |
+| 🛠️ **高度定制**   | 支持自定义主题颜色、热键及默认配置。              |
+| 💾 **配置持久化** | 所有配置通过 `settings.json` 保存，重启不丢失。   |
+| 🌐 **多语言支持** | 内置多种语言（简/繁中、英、西、法、日、韩、俄）。 |
+| 🖥️ **DPI 感知**   | 完美适配 Windows 高 DPI 显示器。                  |
 
-    Loop playback until you stop it.
+## 🚀 快速开始
 
--   速度控制：实时加速/减速，最低 0.1x。
+### 📦 下载与运行
 
-    Live speed control (min 0.1x).
+您可以直接从 [Releases](../../releases) 页面下载对应系统的可执行文件，无需安装 Python 环境。
 
--   彩色界面：ANSI 彩色状态显示。
+-   **Windows**: `MacroTool-Windows.exe`
+-   **Linux**: `MacroTool-Linux`
+-   **macOS**: `MacroTool-macOS`
 
-    ANSI-colored terminal UI.
+> 首次运行若无 `settings.json`，程序将提示您选择语言。
 
--   热键控制：全局热键，无需切窗。
+### 🐍 源码运行
 
-    Global hotkeys without switching windows.
+如果您更喜欢从源码运行，请确保已安装 Python 3.x 环境。
 
--   自定义主题：界面颜色可配置。
+1.  **安装依赖**
 
-    Customizable theme colors.
+    ```bash
+    pip install -r requirements.txt
+    ```
 
--   配置持久化：`settings.json` 自定义热键和默认值。
+2.  **运行主程序**
 
-    Persistent settings via `settings.json`.
+    ```bash
+    python src/main.py
+    ```
 
--   多语言：首启可选语言，语言位于 `lang/`（zh, en, es, fr, ja, ko, zh-TW, ru）。
+3.  **默认热键**
 
-    Multi-language via `lang/` files (zh, en, es, fr, ja, ko, zh-TW, ru).
+    | 动作     | 热键        | 说明                            |
+    | :------- | :---------- | :------------------------------ |
+    | **录制** | `F8`        | 开始 / 停止录制                 |
+    | **回放** | `F9`        | 开始 / 停止回放                 |
+    | **加速** | `Page Up`   | 增加回放速度 (+0.5x)            |
+    | **减速** | `Page Down` | 减少回放速度 (-0.5x, 最低 0.1x) |
 
--   DPI 感知：适配 Windows 高 DPI。
+## ⚙️ 配置文件
 
-    DPI awareness on Windows.
-
-## 下载与运行 / Binaries
-
-可从 [Releases](../../releases) 获取可执行文件。
-
-Grab executables from [Releases](../../releases).
-
--   Windows: `MacroTool-Windows.exe`
--   Linux: `MacroTool-Linux`
--   macOS: `MacroTool-macOS`
-
-首次运行若无 `settings.json` 将提示选择语言。
-
-On first run (no `settings.json`), you will be prompted to choose a language.
-
-## 源码运行 / Run from Source
-
-0. 你需要一个 Python 3.x 环境。 / You need a Python 3.x environment.
-
-1. 安装依赖 / Install dependencies:
-
-```bash
-pip install -r requirements.txt
-```
-
-2. 运行主程序 / Run the app:
-
-```bash
-python src/main.py
-```
-
-3. 默认热键 / Default hotkeys：
-
--   开始/停止录制：F8
-
-    Start/Stop Record: F8
-
--   开始/停止回放：F9
-
-    Start/Stop Play: F9
-
--   增加速度：Page Up（+0.5x）
-
-    Speed Up: Page Up (+0.5x)
-
--   减少速度：Page Down（-0.5x，最低 0.1x）
-
-    Slow Down: Page Down (-0.5x, min 0.1x)
-
-## 配置文件 / settings.json
-
-首次运行自动生成，可手动修改。
-
-Auto-created on first run; you can edit it.
+配置文件 `settings.json` 会在首次运行时自动生成。您可以手动修改它来定制工具。
 
 ```json
 {
@@ -122,50 +97,21 @@ Auto-created on first run; you can edit it.
 }
 ```
 
-字段说明：
+### 字段说明
 
-Field notes:
+-   **`hotkeys`**: 自定义录制、回放及速度控制的热键。
+-   **`default_speed`**: 默认的回放倍速。
+-   **`macro_filename`**: 录制数据的保存文件名。
+-   **`sample_rate`**: 录制采样间隔（秒），默认 `0.016` (约 60Hz)。
+-   **`language`**: 界面语言代码 (`zh`, `en`, `es`, `fr`, `ja`, `ko`, `zh-TW`, `ru`)。
+-   **`theme`**: 终端颜色主题配置，支持 `BRIGHT_*`、基础颜色、`BOLD` 及 `ENDC`。
 
--   `hotkeys.*`: 录制/回放/加速/减速热键。
+## ⚠️ 注意事项
 
-    `hotkeys.*`: record/play/speed up/speed down hotkeys.
+-   **数据保存**: 录制的数据默认保存在当前目录下的 `macro.json` 文件中。
+-   **鼠标接管**: 回放期间鼠标会被程序接管，如需停止请直接按下 **回放热键** (默认 F9)。
+-   **权限问题**: 在某些高权限场景（如游戏或系统设置页面）下，可能需要以 **管理员身份** 运行终端。
 
--   `default_speed`: 默认回放倍速。
+## 📝 许可证
 
-    `default_speed`: default playback speed multiplier.
-
--   `macro_filename`: 宏文件保存名。
-
-    `macro_filename`: macro file name.
-
--   `sample_rate`: 录制采样间隔（秒），默认 0.016（约 60Hz）。
-
-    `sample_rate`: record interval in seconds (default 0.016 ~60Hz).
-
--   `language`: 语言代码（zh/en/es/fr/ja/ko/zh-TW/ru）。
-
-    `language`: language code (zh/en/es/fr/ja/ko/zh-TW/ru).
-
--   `theme`: 终端颜色主题，可用 `BRIGHT_*` / 基础色 / `BOLD` / `ENDC`。
-
-    `theme`: terminal colors (`BRIGHT_*`, base colors, `BOLD`, `ENDC`).
-
-## 注意事项 / Notes
-
--   录制数据默认保存在 `macro.json`。
-
-    Recorded data defaults to `macro.json`.
-
--   回放时鼠标可能被接管，需停止请按回放热键。
-
-    During playback the mouse may be controlled; stop with the playback hotkey.
-
--   某些高权限场景可能需要以管理员身份运行终端。
-
-    Some high-privilege contexts may require running the terminal as admin.
-
-## 作者 / Author
-
-作者: gogei (https://gogei.netlify.app/)
-
-Author: gogei (https://gogei.netlify.app/)
+本项目采用 [MIT License](./LICENSE) 许可证。
